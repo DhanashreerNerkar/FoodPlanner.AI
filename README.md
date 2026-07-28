@@ -208,3 +208,6 @@ Scope-cut list (if running out of time)
 Cut in this order without breaking the core demo: T12 (USDA nutrition) → T22 (bias check, keep as documented gap) → T20 (full sensitivity matrix, keep 2–3 spot checks) → T21 (keep only prompt-injection + tool-misuse, drop the rest).
 
 Never cut: T14 (hard-constraint filter) and T19 (validators) — these are the safety backbone of the whole app.
+
+--------------------------------
+Deply on: Streamlit Community Cloud - Free, built for exactly this, one-click from a GitHub repo

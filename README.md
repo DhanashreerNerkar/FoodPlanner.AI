@@ -62,6 +62,39 @@ Stage map (what we're building)
 → Stage 5 Substitution/Derivation (LLM, interactive) 
 → Stage 6 Gap List (code)
 
+--------------------------------
+user-facing feature Covered
+--------------------------------
+1. Personalized Profile & Dietary Safety (T4, T7, T14)
+Users set diet type and cultural/religious constraints (vegetarian, halal, kosher, Jain, etc.) once at the start. This becomes a hard constraint enforced by deterministic code — not LLM judgment — at every downstream stage, so a restriction can never be silently violated.
+
+2. Fridge/Pantry Photo → Confirmed Inventory (T8)
+Users upload or snap a photo of their fridge/pantry. Claude's vision extracts food items into an editable checklist, which the user must confirm before anything else runs — this stops vision misreads from cascading through the whole pipeline.
+
+3. Spoilage-Aware Freshness Ranking (T9, T10)
+Every confirmed ingredient gets scored 1–5 for perishability using a grounded shelf-life table (never guessed from the photo itself). Items scoring 4+ are flagged as "use first" — this is the core waste-reduction engine of the app.
+
+4. Diet-Filtered Recipe Retrieval (T11, T12)
+Live recipe search (Spoonacular) is filtered against the user's profile before any recipe reaches the planning model — so a vegetarian user's candidate list never contains meat, hidden gelatin, or fish sauce in the first place. Nutrition data (USDA) enriches results where available.
+
+5. Multi-Day Meal Plan (T13)
+A constrained-generation planner builds a multi-night plan using only the retrieved, filtered recipes — prioritizing soon-to-spoil ingredients first and reusing ingredients across nights to minimize waste.
+
+6. Smart Ingredient Substitution — including "make it at home" (T15)
+The standout feature: if a recipe needs something the user doesn't have (e.g., paneer), the bot first checks whether it can be derived at home from something the user likely has (milk/curd → paneer), presents those options interactively, and only falls back to "buy it" if no home-makeable or store-bought substitute is compliant with the user's diet.
+
+7. Gap-Only Shopping List (T16)
+Once a plan (and any substitution choices) are finalized, deterministic set-math computes exactly what's missing — no duplicated pantry staples, no LLM arithmetic errors.
+
+8. Conversational Flow Control (T17, T18)
+LangGraph routes each user message to the right stage (planning vs. substitution) and Streamlit renders the whole journey — photo in, plan and shopping list out — as a single interactive experience.
+
+9. Safety & Reliability Hardening (T19, T20, T21)
+Automated validators catch schema breaks and dietary violations before anything reaches the user; the pipeline is tested for consistency under reworded/typo'd input; and it's stress-tested against prompt injection, jailbreak attempts, and tool misuse.
+
+10. Ethics & Responsible Rollout (T22, T23)
+A documented check for how well the app serves halal/kosher/vegan/non-Western diets (an honest known-gap, not a fixed problem), plus a live, publicly deployable app on Streamlit Community Cloud.
+
 ------------------------------------------------------------------------------------------------------------------
 Day 1:
 ------------------------------------------------------------------------------------------------------------------
@@ -211,3 +244,6 @@ Never cut: T14 (hard-constraint filter) and T19 (validators) — these are the s
 
 --------------------------------
 Deply on: Streamlit Community Cloud - Free, built for exactly this, one-click from a GitHub repo
+---------------------------------
+
+

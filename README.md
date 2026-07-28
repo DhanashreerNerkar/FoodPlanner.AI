@@ -200,27 +200,7 @@ Never cut: T14 and T19 — these are the safety backbone of the whole app.
 ------------------------------------------
 Dependency chain at a glance
 ---------------------------------------------
-T1,T2,T3,T4,T5,T6  (Day 1, no deps)
-   │
-   ├─> T7 (profile UI) ─┐
-   ├─> T8 (vision)      │
-   ├─> T9 (freshness) ──┼─> T10 (priority filter)
-   │                    │
-   └─> T11 (Spoonacular, needs T7)
-   └─> T12 (nutrition)
-   │
-   ▼ (Day 2 done)
-T13 (planning, needs T10+T11)
-   │
-   ├─> T14 (hard-constraint filter)
-   ├─> T15 (substitution/derivation, needs T3+T13)
-   ├─> T16 (gap list, needs T13+T15)
-   └─> T17 (LangGraph full wiring, needs T13+T15+T16)
-         │
-         └─> T18 (UI)
-   │
-   ▼ (Day 3 done)
-T19 (validators) ── T20 (sensitivity) ── T21 (red-team) ── T22 (bias check) ── T23 (deploy)
+<img width="1028" height="826" alt="image" src="https://github.com/user-attachments/assets/3827a7bf-5ce4-4269-83d2-75b337a3527f" />
 
 ------------------------------------------
 Scope-cut list (if running out of time)

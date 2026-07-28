@@ -1,5 +1,6 @@
+---------------------------------------------------------------------------------------------------------------------
 # FoodPlanner.AI
-
+---------------------------------------------------------------------------------------------------------------------
 Purpose
 Chabot will have profile of person having details about his dietry and traditiona/cultural eating habits/any other constraints.
 A chatbot-based meal-planning assistant that accepts an uploaded or camera-captured fridge/pantry photo as its primary input.
@@ -23,7 +24,7 @@ This substitution logic should be a general pattern — recognizable "base ingre
 
 ---------------------------------------------------------------------------------------------------------------------
 FoodPlanner.AI — Requirements Folded into the Pipeline: 
-
+---------------------------------------------------------------------------------------------------------------------
 New Stage 0 — Profile Capture (runs before Stage 1, one per user): Triggered on first session or whenever profile is empty/update profile is clicked; captures diet type (vegetarian/vegan/non-veg) and cultural/religious constraints (halal, kosher, Jain, etc.).
 Written to user_profile.json (long-term memory) as a hard constraint, not a preference — every later stage reads it, none can override it.
 Also captures ambient rules implied by the diet type up front — e.g., Jain → no onion/garlic/root vegetables — so Stage 4/5 don't have to re-derive them.

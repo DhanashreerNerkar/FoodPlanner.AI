@@ -22,11 +22,9 @@ If they select make paneer from milk steps, the bot walks them through making fr
 This substitution logic should be a general pattern — recognizable "base ingredients → homemade derivative" chains, not a one-off for paneer keeping in context the users eating constraints
 
 ---------------------------------------------------------------------------------------------------------------------
-FoodPlanner.AI — Requirements Folded into the Pipeline
+FoodPlanner.AI — Requirements Folded into the Pipeline: 
 
-New Stage 0 — Profile Capture (runs before Stage 1, one per user)
-
-Triggered on first session or whenever profile is empty/update profile is clicked; captures diet type (vegetarian/vegan/non-veg) and cultural/religious constraints (halal, kosher, Jain, etc.).
+New Stage 0 — Profile Capture (runs before Stage 1, one per user): Triggered on first session or whenever profile is empty/update profile is clicked; captures diet type (vegetarian/vegan/non-veg) and cultural/religious constraints (halal, kosher, Jain, etc.).
 Written to user_profile.json (long-term memory) as a hard constraint, not a preference — every later stage reads it, none can override it.
 Also captures ambient rules implied by the diet type up front — e.g., Jain → no onion/garlic/root vegetables — so Stage 4/5 don't have to re-derive them.
 Skipped on returning sessions unless the user asks to edit settings.

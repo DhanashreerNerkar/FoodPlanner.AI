@@ -1,5 +1,39 @@
 ---------------------------------------------------------------------------------------------------------------------
-# FoodPlanner.AI
+# PantryPilot (FoodPlanner.AI)
+---------------------------------------------------------------------------------------------------------------------
+
+## Quick start
+
+```bash
+cd FoodPlanner.AI
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env   # then set ANTHROPIC_API_KEY and SPOONACULAR_API_KEY
+streamlit run app.py
+```
+
+FoodPlanner.AI is an **interactive chatbot** (not a static form). Flow:
+
+Profile setup → planning questions → fridge photo / typed inventory → confirmation gate → freshness → diet-safe recipes → multi-day plan → meal feedback → substitutions / homemade derivation → confirmed shopping list.
+
+Offline checks (no API keys required):
+
+```bash
+pytest -q
+python scripts/smoke_demo.py
+```
+
+Profile persists in `data/user_data/user_profile.json`. Session memory resets on **New Plan**; the profile does not.
+
+Stack: Streamlit chat UI · LangGraph orchestration · Claude (vision/planning) · Spoonacular (recipes) · deterministic diet/gap validators.
+
+### Streamlit Community Cloud
+1. Push this repo to GitHub.
+2. Create an app at https://share.streamlit.io pointing at `app.py`.
+3. Add secrets: `ANTHROPIC_API_KEY`, `SPOONACULAR_API_KEY` (optional `ANTHROPIC_MODEL`).
+4. Demo mode works with fixture recipes if Spoonacular is unavailable.
+
 ---------------------------------------------------------------------------------------------------------------------
 Purpose
 Chabot will have profile of person having details about his dietry and traditiona/cultural eating habits/any other constraints.

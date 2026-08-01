@@ -1,0 +1,1641 @@
+{
+  "stage": "adjustments",
+  "profile_step": "diet_type",
+  "pref_step": "meals",
+  "messages": [
+    {
+      "role": "assistant",
+      "content": "Hi! I’m your FoodPlanner.AI assistant.\n\nI’ll help you use what you already have, prioritize ingredients that may spoil soon, and create meals that match your saved dietary profile.\n\nTo get started, I’ll ask a few quick questions. You can change any answer later.\n\nHow many days or meals would you like me to plan?",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Custom",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "How many days should I plan?",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "2",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Which meals should I include?",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Dinner",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Great. Now show me what you already have.\n\nUpload or take a clear photo of your fridge or pantry, or type your ingredients. I'll assume you have basics like salt, pepper, oil, and water — tell me if not.\n\nYou'll be able to correct everything I detect before I plan anything.",
+      "kind": "inventory_prompt",
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "I found: cashews, pickled garlic, lemon, red grapes, peanut butter, eggs, shredded mozzarella cheese, yogurt, cherry tomatoes, hummus, ketchup, hot sauce, sweet corn, sliced white mushrooms, blackberries, shredded cabbage, chicken wings, greek yogurt.\n\nPlease check the list before I create your plan—I may miss items hidden behind containers or misread packaging.",
+      "kind": "inventory_review",
+      "meta": {
+        "inventory": [
+          {
+            "id": "ing_bf453049a0",
+            "normalized_name": "cashew",
+            "display_name": "cashews",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.9,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": false,
+            "notes": ""
+          },
+          {
+            "id": "ing_95ea2c32c0",
+            "normalized_name": "pickled garlic",
+            "display_name": "pickled garlic",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.7,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": true,
+            "notes": ""
+          },
+          {
+            "id": "ing_0a9e478d24",
+            "normalized_name": "lemon",
+            "display_name": "lemon",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.7,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": true,
+            "notes": ""
+          },
+          {
+            "id": "ing_2781321794",
+            "normalized_name": "red grape",
+            "display_name": "red grapes",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.7,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": true,
+            "notes": ""
+          },
+          {
+            "id": "ing_a114dc4749",
+            "normalized_name": "peanut butter",
+            "display_name": "peanut butter",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.9,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": false,
+            "notes": ""
+          },
+          {
+            "id": "ing_6052d30959",
+            "normalized_name": "egg",
+            "display_name": "eggs",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.9,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": false,
+            "notes": ""
+          },
+          {
+            "id": "ing_13d12f03e9",
+            "normalized_name": "shredded mozzarella cheese",
+            "display_name": "shredded mozzarella cheese",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.7,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": true,
+            "notes": ""
+          },
+          {
+            "id": "ing_9e3842c1d3",
+            "normalized_name": "yogurt",
+            "display_name": "yogurt",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.9,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": false,
+            "notes": ""
+          },
+          {
+            "id": "ing_37ee67bd8d",
+            "normalized_name": "cherry tomato",
+            "display_name": "cherry tomatoes",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.7,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": true,
+            "notes": ""
+          },
+          {
+            "id": "ing_9a1e5f2886",
+            "normalized_name": "hummu",
+            "display_name": "hummus",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.9,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": false,
+            "notes": ""
+          },
+          {
+            "id": "ing_c4dbed6ea2",
+            "normalized_name": "ketchup",
+            "display_name": "ketchup",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.7,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": true,
+            "notes": ""
+          },
+          {
+            "id": "ing_474bbba6d5",
+            "normalized_name": "hot sauce",
+            "display_name": "hot sauce",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.7,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": true,
+            "notes": ""
+          },
+          {
+            "id": "ing_bc84b19e63",
+            "normalized_name": "sweet corn",
+            "display_name": "sweet corn",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.9,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": false,
+            "notes": ""
+          },
+          {
+            "id": "ing_4d415666cc",
+            "normalized_name": "sliced white mushroom",
+            "display_name": "sliced white mushrooms",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.9,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": false,
+            "notes": ""
+          },
+          {
+            "id": "ing_81d2d1b702",
+            "normalized_name": "blackberry",
+            "display_name": "blackberries",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.7,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": true,
+            "notes": ""
+          },
+          {
+            "id": "ing_f9eddf688d",
+            "normalized_name": "shredded cabbage",
+            "display_name": "shredded cabbage",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.9,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": false,
+            "notes": ""
+          },
+          {
+            "id": "ing_5542be733c",
+            "normalized_name": "chicken wing",
+            "display_name": "chicken wings",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.7,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": true,
+            "notes": ""
+          },
+          {
+            "id": "ing_b8054733db",
+            "normalized_name": "greek yogurt",
+            "display_name": "greek yogurt",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.9,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": false,
+            "notes": ""
+          }
+        ]
+      }
+    },
+    {
+      "role": "assistant",
+      "content": "I detected **eggs** — these conflict with your saved dietary profile. Should I:\n\n1. Keep them recorded but exclude them from your plan (e.g., they're for someone else)\n2. Remove them from the inventory (e.g., detected incorrectly)",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Exclude from plan",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "I'll keep **eggs** recorded but exclude them from your plan.",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Here's what I recommend using first:\n\n**Use first:**\n• yogurt — dairy_cultured from shelf-life reference; opened\n• cherry tomato — soft_produce from shelf-life reference; opened\n• sliced white mushroom — soft_produce from shelf-life reference; opened\n• blackberry — berries from shelf-life reference; opened\n• greek yogurt — dairy_cultured from shelf-life reference; opened\n• cherry — soft_produce from shelf-life reference; opened\n\n**Use soon:**\n• cashew — not in shelf-life reference; default score 3; opened\n• pickled garlic — allium from shelf-life reference; opened\n• hummu — not in shelf-life reference; default score 3; opened\n• ketchup — not in shelf-life reference; default score 3; opened\n• hot sauce — not in shelf-life reference; default score 3; opened\n• sweet corn — not in shelf-life reference; default score 3; opened\n• shredded cabbage — not in shelf-life reference; default score 3; opened\n\n**Longer-lasting:**\n• lemon — citrus from shelf-life reference; opened\n• shredded mozzarella cheese — aged_cheese from shelf-life reference; opened\n\n_These are planning-priority estimates, not food-safety guarantees. Check smell, texture, storage history, and package dates before eating._\n\nShould I generate your meal plan now?",
+      "kind": "freshness",
+      "meta": {
+        "ranked": [
+          {
+            "item": "yogurt",
+            "score": 5,
+            "class": "dairy_cultured",
+            "reason": "dairy_cultured from shelf-life reference; opened",
+            "in_reference": true,
+            "priority_label": "use_first",
+            "uncertain": false,
+            "ingredient_id": "ing_9e3842c1d3"
+          },
+          {
+            "item": "cherry tomato",
+            "score": 5,
+            "class": "soft_produce",
+            "reason": "soft_produce from shelf-life reference; opened",
+            "in_reference": true,
+            "priority_label": "use_first",
+            "uncertain": false,
+            "ingredient_id": "ing_37ee67bd8d"
+          },
+          {
+            "item": "sliced white mushroom",
+            "score": 5,
+            "class": "soft_produce",
+            "reason": "soft_produce from shelf-life reference; opened",
+            "in_reference": true,
+            "priority_label": "use_first",
+            "uncertain": false,
+            "ingredient_id": "ing_4d415666cc"
+          },
+          {
+            "item": "blackberry",
+            "score": 5,
+            "class": "berries",
+            "reason": "berries from shelf-life reference; opened",
+            "in_reference": true,
+            "priority_label": "use_first",
+            "uncertain": false,
+            "ingredient_id": "ing_81d2d1b702"
+          },
+          {
+            "item": "greek yogurt",
+            "score": 5,
+            "class": "dairy_cultured",
+            "reason": "dairy_cultured from shelf-life reference; opened",
+            "in_reference": true,
+            "priority_label": "use_first",
+            "uncertain": false,
+            "ingredient_id": "ing_b8054733db"
+          },
+          {
+            "item": "cherry",
+            "score": 5,
+            "class": "soft_produce",
+            "reason": "soft_produce from shelf-life reference; opened",
+            "in_reference": true,
+            "priority_label": "use_first",
+            "uncertain": false,
+            "ingredient_id": "ing_100fc50e18"
+          },
+          {
+            "item": "cashew",
+            "score": 4,
+            "class": "unknown",
+            "reason": "not in shelf-life reference; default score 3; opened",
+            "in_reference": false,
+            "priority_label": "use_soon",
+            "uncertain": true,
+            "ingredient_id": "ing_bf453049a0"
+          },
+          {
+            "item": "pickled garlic",
+            "score": 4,
+            "class": "allium",
+            "reason": "allium from shelf-life reference; opened",
+            "in_reference": true,
+            "priority_label": "use_soon",
+            "uncertain": false,
+            "ingredient_id": "ing_95ea2c32c0"
+          },
+          {
+            "item": "hummu",
+            "score": 4,
+            "class": "unknown",
+            "reason": "not in shelf-life reference; default score 3; opened",
+            "in_reference": false,
+            "priority_label": "use_soon",
+            "uncertain": true,
+            "ingredient_id": "ing_9a1e5f2886"
+          },
+          {
+            "item": "ketchup",
+            "score": 4,
+            "class": "unknown",
+            "reason": "not in shelf-life reference; default score 3; opened",
+            "in_reference": false,
+            "priority_label": "use_soon",
+            "uncertain": true,
+            "ingredient_id": "ing_c4dbed6ea2"
+          },
+          {
+            "item": "hot sauce",
+            "score": 4,
+            "class": "unknown",
+            "reason": "not in shelf-life reference; default score 3; opened",
+            "in_reference": false,
+            "priority_label": "use_soon",
+            "uncertain": true,
+            "ingredient_id": "ing_474bbba6d5"
+          },
+          {
+            "item": "sweet corn",
+            "score": 4,
+            "class": "unknown",
+            "reason": "not in shelf-life reference; default score 3; opened",
+            "in_reference": false,
+            "priority_label": "use_soon",
+            "uncertain": true,
+            "ingredient_id": "ing_bc84b19e63"
+          },
+          {
+            "item": "shredded cabbage",
+            "score": 4,
+            "class": "unknown",
+            "reason": "not in shelf-life reference; default score 3; opened",
+            "in_reference": false,
+            "priority_label": "use_soon",
+            "uncertain": true,
+            "ingredient_id": "ing_f9eddf688d"
+          },
+          {
+            "item": "lemon",
+            "score": 3,
+            "class": "citrus",
+            "reason": "citrus from shelf-life reference; opened",
+            "in_reference": true,
+            "priority_label": "moderate",
+            "uncertain": false,
+            "ingredient_id": "ing_0a9e478d24"
+          },
+          {
+            "item": "shredded mozzarella cheese",
+            "score": 3,
+            "class": "aged_cheese",
+            "reason": "aged_cheese from shelf-life reference; opened",
+            "in_reference": true,
+            "priority_label": "moderate",
+            "uncertain": false,
+            "ingredient_id": "ing_13d12f03e9"
+          }
+        ]
+      }
+    },
+    {
+      "role": "assistant",
+      "content": "Here’s a draft plan based on your confirmed inventory and profile.\n\nExcluded from cooking (diet conflict): eggs, yogurt, greek yogurt, sliced white mushrooms, blackberries, cherries\n\nHow does this plan look? You can accept it, replace one meal, change the number of days, request a different cuisine, or tell me what you don’t like.",
+      "kind": "meal_cards",
+      "meta": {
+        "plan": {
+          "plan_id": "plan_85750448f0",
+          "plan": [
+            {
+              "night": 1,
+              "day": 1,
+              "meal_type": "dinner",
+              "recipe": "Tomato Lentil Dal",
+              "recipe_id": null,
+              "time_min": 30,
+              "servings": 2,
+              "uses_critical": [
+                "cherry tomato"
+              ],
+              "ingredients_from_inventory": [
+                "cherry tomatoes",
+                "lemon"
+              ],
+              "extra_pantry_items": [
+                "oil",
+                "salt"
+              ],
+              "steps": [
+                "Cook lentils",
+                "Temper spices",
+                "Finish with tomato and lemon"
+              ],
+              "missing_ingredients": [
+                "lentils",
+                "cumin",
+                "turmeric"
+              ],
+              "why_selected": "Uses cherry tomato first.",
+              "status": "proposed",
+              "diet_validation_passed": true
+            },
+            {
+              "night": 2,
+              "day": 2,
+              "meal_type": "dinner",
+              "recipe": "Paneer Spinach Skillet",
+              "recipe_id": null,
+              "time_min": 25,
+              "servings": 2,
+              "uses_critical": [
+                "cherry tomato"
+              ],
+              "ingredients_from_inventory": [
+                "cherry tomatoes"
+              ],
+              "extra_pantry_items": [
+                "oil",
+                "salt"
+              ],
+              "steps": [
+                "Saute onion and tomato",
+                "Add spices",
+                "Fold in paneer and spinach"
+              ],
+              "missing_ingredients": [
+                "paneer",
+                "spinach",
+                "onion",
+                "cumin"
+              ],
+              "why_selected": "Uses cherry tomato first.",
+              "status": "proposed",
+              "diet_validation_passed": true
+            }
+          ],
+          "flagged_for_other_use": [
+            {
+              "item": "eggs",
+              "reason": "Conflicts with user's egg allergy/dietary restriction; excluded from plan per user confirmation."
+            },
+            {
+              "item": "yogurt",
+              "reason": "No matching recipe candidate available; recommend using soon in a side dish or snack to avoid spoilage."
+            },
+            {
+              "item": "greek yogurt",
+              "reason": "No matching recipe candidate available; recommend using soon in a side dish or snack to avoid spoilage."
+            },
+            {
+              "item": "sliced white mushrooms",
+              "reason": "No matching recipe candidate available; recommend using soon (e.g., saute as a side) to avoid spoilage."
+            },
+            {
+              "item": "blackberries",
+              "reason": "No matching recipe candidate available; recommend using soon as a fresh snack or topping to avoid spoilage."
+            },
+            {
+              "item": "cherries",
+              "reason": "No matching recipe candidate available; recommend using soon as a fresh snack to avoid spoilage."
+            }
+          ],
+          "clarification": null,
+          "confirmed": false,
+          "unresolved_gaps": []
+        }
+      }
+    },
+    {
+      "role": "user",
+      "content": "Accept plan",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Your plan is ready. Before I create the shopping list, please confirm that these meals work for you.",
+      "kind": "meal_cards",
+      "meta": {
+        "plan": {
+          "plan_id": "plan_85750448f0",
+          "plan": [
+            {
+              "night": 1,
+              "day": 1,
+              "meal_type": "dinner",
+              "recipe": "Tomato Lentil Dal",
+              "recipe_id": null,
+              "time_min": 30,
+              "servings": 2,
+              "uses_critical": [
+                "cherry tomato"
+              ],
+              "ingredients_from_inventory": [
+                "cherry tomatoes",
+                "lemon"
+              ],
+              "extra_pantry_items": [
+                "oil",
+                "salt"
+              ],
+              "steps": [
+                "Cook lentils",
+                "Temper spices",
+                "Finish with tomato and lemon"
+              ],
+              "missing_ingredients": [
+                "lentils",
+                "cumin",
+                "turmeric"
+              ],
+              "why_selected": "Uses cherry tomato first.",
+              "status": "proposed",
+              "diet_validation_passed": true
+            },
+            {
+              "night": 2,
+              "day": 2,
+              "meal_type": "dinner",
+              "recipe": "Paneer Spinach Skillet",
+              "recipe_id": null,
+              "time_min": 25,
+              "servings": 2,
+              "uses_critical": [
+                "cherry tomato"
+              ],
+              "ingredients_from_inventory": [
+                "cherry tomatoes"
+              ],
+              "extra_pantry_items": [
+                "oil",
+                "salt"
+              ],
+              "steps": [
+                "Saute onion and tomato",
+                "Add spices",
+                "Fold in paneer and spinach"
+              ],
+              "missing_ingredients": [
+                "paneer",
+                "spinach",
+                "onion",
+                "cumin"
+              ],
+              "why_selected": "Uses cherry tomato first.",
+              "status": "proposed",
+              "diet_validation_passed": true
+            }
+          ],
+          "flagged_for_other_use": [
+            {
+              "item": "eggs",
+              "reason": "Conflicts with user's egg allergy/dietary restriction; excluded from plan per user confirmation."
+            },
+            {
+              "item": "yogurt",
+              "reason": "No matching recipe candidate available; recommend using soon in a side dish or snack to avoid spoilage."
+            },
+            {
+              "item": "greek yogurt",
+              "reason": "No matching recipe candidate available; recommend using soon in a side dish or snack to avoid spoilage."
+            },
+            {
+              "item": "sliced white mushrooms",
+              "reason": "No matching recipe candidate available; recommend using soon (e.g., saute as a side) to avoid spoilage."
+            },
+            {
+              "item": "blackberries",
+              "reason": "No matching recipe candidate available; recommend using soon as a fresh snack or topping to avoid spoilage."
+            },
+            {
+              "item": "cherries",
+              "reason": "No matching recipe candidate available; recommend using soon as a fresh snack to avoid spoilage."
+            }
+          ],
+          "clarification": null,
+          "confirmed": false,
+          "unresolved_gaps": []
+        }
+      }
+    },
+    {
+      "role": "user",
+      "content": "Review missing ingredients",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "I couldn’t find a verified substitution that meets your saved dietary constraints. I won’t suggest an unverified replacement. I can replace the recipe or add the missing ingredient to the shopping list.",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Replace this meal",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Understood. I kept the other days unchanged and updated Day 1.",
+      "kind": "meal_cards",
+      "meta": {
+        "plan": {
+          "plan_id": "plan_85750448f0",
+          "plan": [
+            {
+              "night": 1,
+              "day": 1,
+              "meal_type": "dinner",
+              "recipe": "Spinach Lemon Rice Bowl",
+              "recipe_id": null,
+              "time_min": 20,
+              "servings": 2,
+              "uses_critical": [],
+              "ingredients_from_inventory": [
+                "lemon"
+              ],
+              "extra_pantry_items": [
+                "oil",
+                "salt"
+              ],
+              "steps": [
+                "Saute garlic in oil",
+                "Wilt spinach",
+                "Toss with rice and lemon"
+              ],
+              "missing_ingredients": [
+                "spinach",
+                "rice",
+                "garlic"
+              ],
+              "why_selected": "Replacement for Day 1 based on your feedback.",
+              "status": "replaced",
+              "diet_validation_passed": true
+            },
+            {
+              "night": 2,
+              "day": 2,
+              "meal_type": "dinner",
+              "recipe": "Paneer Spinach Skillet",
+              "recipe_id": null,
+              "time_min": 25,
+              "servings": 2,
+              "uses_critical": [
+                "cherry tomato"
+              ],
+              "ingredients_from_inventory": [
+                "cherry tomatoes"
+              ],
+              "extra_pantry_items": [
+                "oil",
+                "salt"
+              ],
+              "steps": [
+                "Saute onion and tomato",
+                "Add spices",
+                "Fold in paneer and spinach"
+              ],
+              "missing_ingredients": [
+                "paneer",
+                "spinach",
+                "onion",
+                "cumin"
+              ],
+              "why_selected": "Uses cherry tomato first.",
+              "status": "proposed",
+              "diet_validation_passed": true
+            }
+          ],
+          "flagged_for_other_use": [
+            {
+              "item": "eggs",
+              "reason": "Conflicts with user's egg allergy/dietary restriction; excluded from plan per user confirmation."
+            },
+            {
+              "item": "yogurt",
+              "reason": "No matching recipe candidate available; recommend using soon in a side dish or snack to avoid spoilage."
+            },
+            {
+              "item": "greek yogurt",
+              "reason": "No matching recipe candidate available; recommend using soon in a side dish or snack to avoid spoilage."
+            },
+            {
+              "item": "sliced white mushrooms",
+              "reason": "No matching recipe candidate available; recommend using soon (e.g., saute as a side) to avoid spoilage."
+            },
+            {
+              "item": "blackberries",
+              "reason": "No matching recipe candidate available; recommend using soon as a fresh snack or topping to avoid spoilage."
+            },
+            {
+              "item": "cherries",
+              "reason": "No matching recipe candidate available; recommend using soon as a fresh snack to avoid spoilage."
+            }
+          ],
+          "clarification": null,
+          "confirmed": false,
+          "unresolved_gaps": []
+        }
+      }
+    }
+  ],
+  "inventory": [
+    {
+      "id": "ing_bf453049a0",
+      "normalized_name": "cashews",
+      "display_name": "cashews",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.9,
+      "confirmed": true,
+      "opened": true,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": false,
+      "notes": ""
+    },
+    {
+      "id": "ing_95ea2c32c0",
+      "normalized_name": "pickled garlic",
+      "display_name": "pickled garlic",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.7,
+      "confirmed": true,
+      "opened": true,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": true,
+      "notes": ""
+    },
+    {
+      "id": "ing_0a9e478d24",
+      "normalized_name": "lemon",
+      "display_name": "lemon",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.7,
+      "confirmed": true,
+      "opened": true,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": true,
+      "notes": ""
+    },
+    {
+      "id": "ing_6052d30959",
+      "normalized_name": "eggs",
+      "display_name": "eggs",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.9,
+      "confirmed": true,
+      "opened": true,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": true,
+      "needs_confirmation": false,
+      "notes": ""
+    },
+    {
+      "id": "ing_13d12f03e9",
+      "normalized_name": "shredded mozzarella cheese",
+      "display_name": "shredded mozzarella cheese",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.7,
+      "confirmed": true,
+      "opened": true,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": true,
+      "notes": ""
+    },
+    {
+      "id": "ing_9e3842c1d3",
+      "normalized_name": "yogurt",
+      "display_name": "yogurt",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.9,
+      "confirmed": true,
+      "opened": true,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": false,
+      "notes": ""
+    },
+    {
+      "id": "ing_37ee67bd8d",
+      "normalized_name": "cherry tomatoes",
+      "display_name": "cherry tomatoes",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.7,
+      "confirmed": true,
+      "opened": true,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": true,
+      "notes": ""
+    },
+    {
+      "id": "ing_9a1e5f2886",
+      "normalized_name": "hummus",
+      "display_name": "hummus",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.9,
+      "confirmed": true,
+      "opened": true,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": false,
+      "notes": ""
+    },
+    {
+      "id": "ing_c4dbed6ea2",
+      "normalized_name": "ketchup",
+      "display_name": "ketchup",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.7,
+      "confirmed": true,
+      "opened": true,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": true,
+      "notes": ""
+    },
+    {
+      "id": "ing_474bbba6d5",
+      "normalized_name": "hot sauce",
+      "display_name": "hot sauce",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.7,
+      "confirmed": true,
+      "opened": true,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": true,
+      "notes": ""
+    },
+    {
+      "id": "ing_bc84b19e63",
+      "normalized_name": "sweet corn",
+      "display_name": "sweet corn",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.9,
+      "confirmed": true,
+      "opened": true,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": false,
+      "notes": ""
+    },
+    {
+      "id": "ing_4d415666cc",
+      "normalized_name": "sliced white mushrooms",
+      "display_name": "sliced white mushrooms",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.9,
+      "confirmed": true,
+      "opened": true,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": false,
+      "notes": ""
+    },
+    {
+      "id": "ing_81d2d1b702",
+      "normalized_name": "blackberries",
+      "display_name": "blackberries",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.7,
+      "confirmed": true,
+      "opened": true,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": true,
+      "notes": ""
+    },
+    {
+      "id": "ing_f9eddf688d",
+      "normalized_name": "shredded cabbage",
+      "display_name": "shredded cabbage",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.9,
+      "confirmed": true,
+      "opened": true,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": false,
+      "notes": ""
+    },
+    {
+      "id": "ing_b8054733db",
+      "normalized_name": "greek yogurt",
+      "display_name": "greek yogurt",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.9,
+      "confirmed": true,
+      "opened": true,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": false,
+      "notes": ""
+    },
+    {
+      "id": "ing_100fc50e18",
+      "normalized_name": "cherries",
+      "display_name": "cherries",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "typed",
+      "confidence": 1.0,
+      "confirmed": true,
+      "opened": true,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": false,
+      "notes": ""
+    }
+  ],
+  "pending_conflicts": [],
+  "ranked": [
+    {
+      "item": "yogurt",
+      "score": 4,
+      "class_name": "dairy_cultured",
+      "reason": "dairy_cultured from shelf-life reference",
+      "in_reference": true,
+      "priority_label": "use_soon",
+      "uncertain": false,
+      "ingredient_id": null
+    },
+    {
+      "item": "cherry tomato",
+      "score": 4,
+      "class_name": "soft_produce",
+      "reason": "soft_produce from shelf-life reference",
+      "in_reference": true,
+      "priority_label": "use_soon",
+      "uncertain": false,
+      "ingredient_id": null
+    },
+    {
+      "item": "sliced white mushroom",
+      "score": 4,
+      "class_name": "soft_produce",
+      "reason": "soft_produce from shelf-life reference",
+      "in_reference": true,
+      "priority_label": "use_soon",
+      "uncertain": false,
+      "ingredient_id": null
+    },
+    {
+      "item": "blackberry",
+      "score": 4,
+      "class_name": "berries",
+      "reason": "berries from shelf-life reference",
+      "in_reference": true,
+      "priority_label": "use_soon",
+      "uncertain": false,
+      "ingredient_id": null
+    },
+    {
+      "item": "greek yogurt",
+      "score": 4,
+      "class_name": "dairy_cultured",
+      "reason": "dairy_cultured from shelf-life reference",
+      "in_reference": true,
+      "priority_label": "use_soon",
+      "uncertain": false,
+      "ingredient_id": null
+    },
+    {
+      "item": "cherry",
+      "score": 4,
+      "class_name": "soft_produce",
+      "reason": "soft_produce from shelf-life reference",
+      "in_reference": true,
+      "priority_label": "use_soon",
+      "uncertain": false,
+      "ingredient_id": null
+    },
+    {
+      "item": "cashew",
+      "score": 3,
+      "class_name": "unknown",
+      "reason": "not in shelf-life reference; default score 3",
+      "in_reference": false,
+      "priority_label": "moderate",
+      "uncertain": true,
+      "ingredient_id": null
+    },
+    {
+      "item": "pickled garlic",
+      "score": 3,
+      "class_name": "allium",
+      "reason": "allium from shelf-life reference",
+      "in_reference": true,
+      "priority_label": "moderate",
+      "uncertain": false,
+      "ingredient_id": null
+    },
+    {
+      "item": "hummu",
+      "score": 3,
+      "class_name": "unknown",
+      "reason": "not in shelf-life reference; default score 3",
+      "in_reference": false,
+      "priority_label": "moderate",
+      "uncertain": true,
+      "ingredient_id": null
+    },
+    {
+      "item": "ketchup",
+      "score": 3,
+      "class_name": "unknown",
+      "reason": "not in shelf-life reference; default score 3",
+      "in_reference": false,
+      "priority_label": "moderate",
+      "uncertain": true,
+      "ingredient_id": null
+    },
+    {
+      "item": "hot sauce",
+      "score": 3,
+      "class_name": "unknown",
+      "reason": "not in shelf-life reference; default score 3",
+      "in_reference": false,
+      "priority_label": "moderate",
+      "uncertain": true,
+      "ingredient_id": null
+    },
+    {
+      "item": "sweet corn",
+      "score": 3,
+      "class_name": "unknown",
+      "reason": "not in shelf-life reference; default score 3",
+      "in_reference": false,
+      "priority_label": "moderate",
+      "uncertain": true,
+      "ingredient_id": null
+    },
+    {
+      "item": "shredded cabbage",
+      "score": 3,
+      "class_name": "unknown",
+      "reason": "not in shelf-life reference; default score 3",
+      "in_reference": false,
+      "priority_label": "moderate",
+      "uncertain": true,
+      "ingredient_id": null
+    },
+    {
+      "item": "lemon",
+      "score": 2,
+      "class_name": "citrus",
+      "reason": "citrus from shelf-life reference",
+      "in_reference": true,
+      "priority_label": "longer",
+      "uncertain": false,
+      "ingredient_id": null
+    },
+    {
+      "item": "shredded mozzarella cheese",
+      "score": 2,
+      "class_name": "aged_cheese",
+      "reason": "aged_cheese from shelf-life reference",
+      "in_reference": true,
+      "priority_label": "longer",
+      "uncertain": false,
+      "ingredient_id": null
+    }
+  ],
+  "critical_priority": [
+    "yogurt",
+    "cherry tomato",
+    "sliced white mushroom",
+    "blackberry",
+    "greek yogurt",
+    "cherry"
+  ],
+  "recipe_candidates": [
+    {
+      "id": 1001,
+      "title": "Spinach Lemon Rice Bowl",
+      "ingredients": [
+        "spinach",
+        "rice",
+        "lemon",
+        "garlic",
+        "oil",
+        "salt"
+      ],
+      "ready_in_minutes": 20,
+      "steps": [
+        "Saute garlic in oil",
+        "Wilt spinach",
+        "Toss with rice and lemon"
+      ],
+      "source": "fixture",
+      "cuisine": null
+    },
+    {
+      "id": 1002,
+      "title": "Paneer Spinach Skillet",
+      "ingredients": [
+        "paneer",
+        "spinach",
+        "onion",
+        "tomato",
+        "cumin",
+        "oil",
+        "salt"
+      ],
+      "ready_in_minutes": 25,
+      "steps": [
+        "Saute onion and tomato",
+        "Add spices",
+        "Fold in paneer and spinach"
+      ],
+      "source": "fixture",
+      "cuisine": null
+    },
+    {
+      "id": 1003,
+      "title": "Lemon Herb Chickpea Salad",
+      "ingredients": [
+        "chickpeas",
+        "lemon",
+        "cucumber",
+        "olive oil",
+        "salt",
+        "pepper"
+      ],
+      "ready_in_minutes": 15,
+      "steps": [
+        "Drain chickpeas",
+        "Toss with lemon and oil",
+        "Season and serve"
+      ],
+      "source": "fixture",
+      "cuisine": null
+    },
+    {
+      "id": 1004,
+      "title": "Tofu Stir Fry with Greens",
+      "ingredients": [
+        "tofu",
+        "spinach",
+        "soy sauce",
+        "garlic",
+        "oil",
+        "rice"
+      ],
+      "ready_in_minutes": 25,
+      "steps": [
+        "Brown tofu",
+        "Add greens",
+        "Finish with soy and serve over rice"
+      ],
+      "source": "fixture",
+      "cuisine": null
+    },
+    {
+      "id": 1005,
+      "title": "Chicken Kale Bake",
+      "ingredients": [
+        "chicken",
+        "kale",
+        "cream",
+        "garlic",
+        "salt"
+      ],
+      "ready_in_minutes": 35,
+      "steps": [
+        "Bake chicken with kale in cream sauce"
+      ],
+      "source": "fixture",
+      "cuisine": null
+    },
+    {
+      "id": 1006,
+      "title": "Tomato Lentil Dal",
+      "ingredients": [
+        "lentils",
+        "tomato",
+        "cumin",
+        "turmeric",
+        "oil",
+        "salt",
+        "lemon"
+      ],
+      "ready_in_minutes": 30,
+      "steps": [
+        "Cook lentils",
+        "Temper spices",
+        "Finish with tomato and lemon"
+      ],
+      "source": "fixture",
+      "cuisine": null
+    }
+  ],
+  "plan": {
+    "plan_id": "plan_85750448f0",
+    "plan": [
+      {
+        "night": 1,
+        "day": 1,
+        "meal_type": "dinner",
+        "recipe": "Spinach Lemon Rice Bowl",
+        "recipe_id": null,
+        "time_min": 20,
+        "servings": 2,
+        "uses_critical": [],
+        "ingredients_from_inventory": [
+          "lemon"
+        ],
+        "extra_pantry_items": [
+          "oil",
+          "salt"
+        ],
+        "steps": [
+          "Saute garlic in oil",
+          "Wilt spinach",
+          "Toss with rice and lemon"
+        ],
+        "missing_ingredients": [
+          "spinach",
+          "rice",
+          "garlic"
+        ],
+        "why_selected": "Replacement for Day 1 based on your feedback.",
+        "status": "replaced",
+        "diet_validation_passed": true
+      },
+      {
+        "night": 2,
+        "day": 2,
+        "meal_type": "dinner",
+        "recipe": "Paneer Spinach Skillet",
+        "recipe_id": null,
+        "time_min": 25,
+        "servings": 2,
+        "uses_critical": [
+          "cherry tomato"
+        ],
+        "ingredients_from_inventory": [
+          "cherry tomatoes"
+        ],
+        "extra_pantry_items": [
+          "oil",
+          "salt"
+        ],
+        "steps": [
+          "Saute onion and tomato",
+          "Add spices",
+          "Fold in paneer and spinach"
+        ],
+        "missing_ingredients": [
+          "paneer",
+          "spinach",
+          "onion",
+          "cumin"
+        ],
+        "why_selected": "Uses cherry tomato first.",
+        "status": "proposed",
+        "diet_validation_passed": true
+      }
+    ],
+    "flagged_for_other_use": [
+      {
+        "item": "eggs",
+        "reason": "Conflicts with user's egg allergy/dietary restriction; excluded from plan per user confirmation."
+      },
+      {
+        "item": "yogurt",
+        "reason": "No matching recipe candidate available; recommend using soon in a side dish or snack to avoid spoilage."
+      },
+      {
+        "item": "greek yogurt",
+        "reason": "No matching recipe candidate available; recommend using soon in a side dish or snack to avoid spoilage."
+      },
+      {
+        "item": "sliced white mushrooms",
+        "reason": "No matching recipe candidate available; recommend using soon (e.g., saute as a side) to avoid spoilage."
+      },
+      {
+        "item": "blackberries",
+        "reason": "No matching recipe candidate available; recommend using soon as a fresh snack or topping to avoid spoilage."
+      },
+      {
+        "item": "cherries",
+        "reason": "No matching recipe candidate available; recommend using soon as a fresh snack to avoid spoilage."
+      }
+    ],
+    "clarification": null,
+    "confirmed": false,
+    "unresolved_gaps": []
+  },
+  "substitution": {
+    "status": "no_substitute",
+    "substitute": null,
+    "prep": null,
+    "integration": null,
+    "source": null,
+    "message": "No suitable substitute found. Modify the recipe accordingly.",
+    "missing_ingredient": "lentils",
+    "recipe_context": "Tomato Lentil Dal",
+    "derivation_options": [],
+    "store_options": [],
+    "selected_option_id": null,
+    "method_steps": []
+  },
+  "gap_list": null,
+  "preferences": {
+    "days": 2,
+    "meal_types": [
+      "dinner"
+    ],
+    "busy_notes": "",
+    "priorities": [],
+    "assume_staples": true,
+    "custom_staples": [],
+    "leftovers": []
+  },
+  "purchased_or_made": [],
+  "awaiting": "plan_feedback",
+  "quick_replies": [
+    "Accept plan",
+    "Replace another meal",
+    "Help with missing ingredients"
+  ],
+  "use_llm": true,
+  "demo_mode": false,
+  "conversation_summary": "User is planning a custom 2-day dinner-only meal plan. Detected inventory: cashews, pickled garlic, lemon, red grapes, peanut butter, eggs, shredded mozzarella cheese, yogurt, cherry tomatoes, hummus, ketchup, hot sauce, sweet corn, sliced white mushrooms, blackberries, shredded cabbage, chicken wings, greek yogurt. Eggs conflict with user's dietary profile; user chose to keep eggs recorded but exclude them from the plan. Assistant identified priority-use items (likely spoiling soon): yogurt, cherry tomatoes, sliced white mushrooms, blackberries, greek yogurt, cherry (assumed opened). No other corrections or preferences stated yet. Next step: finalize plan using these priority items while excluding eggs, for 2 dinners.",
+  "summarized_through": 12
+}

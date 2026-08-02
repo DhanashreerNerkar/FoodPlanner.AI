@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 
-from src.diet_filter import banned_ingredients_for_profile, ingredient_violates
+from src.diet_filter import banned_ingredients_for_profile, filter_recipe_candidates, ingredient_violates
 from src.kb import normalize_name
 from src.llm import GLOBAL_RULES, complete_json
 from src.schemas import FlaggedItem, MealPlan, PlanMeal, RecipeCandidate, UserProfile
@@ -43,12 +43,16 @@ def plan_meals_deterministic(
 ) -> MealPlan:
     flagged = _conflict_items(inventory, profile)
     flagged_names = {normalize_name(f.item) for f in flagged}
-    safe_inv = [i for i in inventory if normalize_name(i) not in flagged_names]
+    safe_inv = [
+        i
+        for i in _safe_inventory(inventory, profile)
+        if normalize_name(i) not in flagged_names
+    ]
     safe_inv_n = {normalize_name(i) for i in safe_inv}
     critical = [c for c in critical_priority if normalize_name(c) not in flagged_names]
 
     usable = []
-    for cand in recipe_candidates:
+    for cand in filter_recipe_candidates(recipe_candidates, profile):
         ing_n = {normalize_name(i) for i in cand.ingredients}
         # Prefer recipes that use inventory and critical items
         overlap = len(ing_n & safe_inv_n)

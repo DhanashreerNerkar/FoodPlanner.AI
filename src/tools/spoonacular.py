@@ -6,6 +6,7 @@ import os
 
 import httpx
 
+from src.diet_filter import filter_recipe_candidates
 from src.kb import load_fixture_recipes
 from src.schemas import RecipeCandidate, UserProfile
 
@@ -54,9 +55,10 @@ def search_by_ingredients(
     if not candidates and use_fixtures_on_failure:
         candidates = [_candidate_from_fixture(r) for r in load_fixture_recipes()]
 
-    # Diet/allergy compliance is decided by the planning LLM using the full
-    # profile as context, not by keyword-filtering the candidate pool here.
-    return candidates
+    # Enforce hard constraints before candidates are supplied to the planner.
+    # The LLM receives only recipe options that have passed this deterministic
+    # check; stage_plan applies a second check to its final output.
+    return filter_recipe_candidates(candidates, profile)
 
 
 def _search_live(ingredients: list[str], api_key: str, number: int = 8) -> list[RecipeCandidate]:

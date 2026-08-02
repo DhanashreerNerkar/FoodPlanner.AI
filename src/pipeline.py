@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 from typing import Any, Literal, TypedDict
 
+from src.diet_filter import filter_recipe_candidates, scan_plan_for_violations
 from src.schemas import (
     GapList,
     MealPlan,
@@ -77,12 +78,14 @@ def stage_critical(state: PipelineState) -> dict[str, Any]:
 def stage_retrieve(state: PipelineState) -> dict[str, Any]:
     profile = _profile(state)
     candidates = search_by_ingredients(state.get("confirmed_items", []), profile)
+    candidates = filter_recipe_candidates(candidates, profile)
     return {"recipe_candidates": [c.model_dump() for c in candidates]}
 
 
 def stage_plan(state: PipelineState) -> dict[str, Any]:
     profile = _profile(state)
     candidates = [RecipeCandidate.model_validate(c) for c in state.get("recipe_candidates", [])]
+    candidates = filter_recipe_candidates(candidates, profile)
     plan = plan_meals(
         inventory=state.get("confirmed_items", []),
         critical_priority=state.get("critical_priority", []),
@@ -92,13 +95,23 @@ def stage_plan(state: PipelineState) -> dict[str, Any]:
         conversation_summary=state.get("conversation_summary", ""),
         user_request=state.get("user_request", ""),
     )
-    # Diet/allergy compliance is the planning LLM's own judgment (long-term
-    # memory = profile, short-term memory = conversation_summary, both fed
-    # into the prompt above) — no deterministic re-check or replan here.
+    violations = scan_plan_for_violations(plan.model_dump(), profile)
+    if violations:
+        # Never expose an unsafe LLM result. Rebuild from the already-filtered
+        # candidate pool without an LLM so the fallback is deterministic.
+        plan = plan_meals(
+            inventory=state.get("confirmed_items", []),
+            critical_priority=state.get("critical_priority", []),
+            recipe_candidates=candidates,
+            profile=profile,
+            use_llm=False,
+        )
     return {
         "plan": plan.model_dump(),
-        "errors": list(state.get("errors") or []),
-        "validation_ok": True,
+        "errors": list(state.get("errors") or []) + (
+            ["Unsafe generated plan blocked and replaced with a safe fallback."] if violations else []
+        ),
+        "validation_ok": not violations,
     }
 
 

@@ -32,6 +32,11 @@ DAIRY_KEYWORDS = {
 
 EGG_KEYWORDS = {"egg", "eggs", "mayonnaise", "mayo"}
 
+# These labels commonly hide animal-derived ingredients.  They may be safe
+# only when a recipe explicitly says so; treat ambiguity as unsafe for users
+# with a vegetarian or vegan profile instead of guessing.
+AMBIGUOUS_VEG_LABELS = {"kimchi", "bibimbap"}
+
 ALLERGEN_MAP = {
     "peanuts": {"peanut", "peanuts"},
     "tree nuts": {"almond", "cashew", "walnut", "pecan", "pistachio", "hazelnut", "nut"},
@@ -80,6 +85,10 @@ def banned_ingredients_for_profile(profile: UserProfile) -> Set[str]:
         banned.update(MEAT_KEYWORDS)
         banned.update(SEAFOOD_KEYWORDS)
         banned.update(HIDDEN_NONVEG)
+    if diet == "vegetarian":
+        # Egg-tolerant users select the explicit ``eggetarian`` profile.  A
+        # regular vegetarian profile must not receive egg-based recipes.
+        banned.update(EGG_KEYWORDS)
     if diet == "eggetarian":
         banned.update(MEAT_KEYWORDS)
         banned.update(SEAFOOD_KEYWORDS)
@@ -136,12 +145,21 @@ def text_violates(text: str, banned: set) -> bool:
     return ingredient_violates(text, banned)
 
 
+def _ambiguous_diet_label(text: str, profile: UserProfile) -> bool:
+    if profile.diet_type not in {"vegetarian", "vegan", "eggetarian"}:
+        return False
+    normalized = _tokens(text)
+    requires_explicit_safe_label = any(label in normalized for label in AMBIGUOUS_VEG_LABELS)
+    is_explicitly_safe = "vegan" in normalized or "egg free" in normalized or "egg-free" in normalized
+    return requires_explicit_safe_label and not is_explicitly_safe
+
+
 def filter_recipe_candidates(candidates, profile: UserProfile):
     banned = banned_ingredients_for_profile(profile)
     kept = []
     for c in candidates:
         blob = " ".join([c.title, *c.ingredients])
-        if text_violates(blob, banned):
+        if text_violates(blob, banned) or _ambiguous_diet_label(blob, profile):
             continue
         if profile.diet_type in {"vegetarian", "vegan", "eggetarian"} and contains_any(c.title, MEAT_KEYWORDS):
             continue
@@ -163,7 +181,9 @@ def scan_plan_for_violations(plan_dict: dict, profile: UserProfile) -> list:
             *meal.get("steps", []),
         ]
         for field in fields:
-            if isinstance(field, str) and text_violates(field, banned):
+            if isinstance(field, str) and (
+                text_violates(field, banned) or _ambiguous_diet_label(field, profile)
+            ):
                 violations.append(field)
     return violations
 

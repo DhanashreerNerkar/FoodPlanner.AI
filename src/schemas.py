@@ -230,6 +230,8 @@ class PlanMeal(BaseModel):
     why_selected: str = ""
     status: str = "proposed"
     diet_validation_passed: bool = True
+    # Full recipe (measured ingredients + detailed steps), generated on demand and cached.
+    detailed_recipe: Optional[Dict[str, Any]] = None
 
     def model_post_init(self, __context: Any) -> None:
         if self.day is None:
@@ -328,6 +330,77 @@ class PlanPreferences(BaseModel):
     leftovers: List[str] = Field(default_factory=list)
 
 
+# ---- Long-term waste / over-purchasing tracking ----
+
+FreshnessStatus = Literal["fresh", "use_soon", "use_first", "high_priority", "near_expiry", "stale"]
+
+OutcomeChoice = Literal[
+    "used", "still_have", "bought_again", "spoiled", "thrown_away", "donated", "not_sure"
+]
+
+
+class SnapshotIngredient(BaseModel):
+    ingredient_id: Optional[str] = None
+    name: str
+    normalized_name: str
+    category: str = "unknown"
+    quantity: Optional[str] = None
+    unit: Optional[str] = None
+    freshness_score: int = 60  # 0-100 scale (KB score 1-5 mapped x20)
+    freshness_status: FreshnessStatus = "fresh"
+    priority_rank: int = 0
+
+
+class SnapshotSummary(BaseModel):
+    total_items: int = 0
+    at_risk_items: int = 0
+    at_risk_percentage: float = 0.0
+    top_at_risk_items: List[str] = Field(default_factory=list)
+
+
+class InventorySnapshot(BaseModel):
+    snapshot_id: str = Field(default_factory=lambda: _id("snap"))
+    user_id: str
+    created_at: str = ""
+    source: str = "typed"  # "image" | "typed" | "mixed"
+    image_reference: Optional[str] = None
+    confirmed: bool = True
+    possible_duplicate: bool = False
+    duplicate_of: Optional[str] = None
+    # None = unknown; False = user said same inventory; True = user said new purchase
+    is_new_purchase: Optional[bool] = None
+    ingredients: List[SnapshotIngredient] = Field(default_factory=list)
+    summary: SnapshotSummary = Field(default_factory=SnapshotSummary)
+
+
+class IngredientOutcome(BaseModel):
+    outcome_id: str = Field(default_factory=lambda: _id("outcome"))
+    user_id: str
+    ingredient_name: str
+    related_snapshot_id: Optional[str] = None
+    recorded_at: str = ""
+    outcome: OutcomeChoice = "not_sure"
+    confirmed_by_user: bool = True
+
+
+class PatternFinding(BaseModel):
+    ingredient: str
+    pattern: str  # repeated_at_risk | persistent_at_risk | disappeared | reappeared
+    occurrences: int = 0
+    confidence: float = 0.5
+    status: str = "unresolved"  # disappearances are unresolved until the user confirms
+    requires_user_confirmation: bool = False
+
+
+class PurchaseRecommendation(BaseModel):
+    ingredient: str
+    recommendation_type: str = "buy_less"  # buy_less | smaller_package | wait_before_buying
+    suggested_reduction_percentage: int = 10
+    reason: str = ""
+    confidence: float = 0.5
+    supporting_snapshot_ids: List[str] = Field(default_factory=list)
+
+
 class SessionState(BaseModel):
     stage: ChatStage = "profile"
     profile_step: str = "diet_type"
@@ -349,3 +422,7 @@ class SessionState(BaseModel):
     demo_mode: bool = False
     conversation_summary: str = ""
     summarized_through: int = 0
+    # Waste-tracking state
+    last_image_hash: Optional[str] = None
+    last_snapshot_id: Optional[str] = None
+    pending_outcomes: List[str] = Field(default_factory=list)

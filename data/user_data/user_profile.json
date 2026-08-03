@@ -1,5 +1,5 @@
 {
-  "user_id": "user_2671184ed8",
+  "user_id": "user_426d2d3c17",
   "diet_type": "vegetarian",
   "diet_style": "strict-vegetarian",
   "cultural_rules": [
@@ -24,7 +24,7 @@
   "household_includes_children": false,
   "cooking_time_preference": "30_45",
   "time_limit_min": 45,
-  "nights": 2,
+  "nights": 1,
   "cooking_skill": "beginner",
   "equipment": [
     "stovetop"
@@ -32,7 +32,7 @@
   "preferred_cuisines": [],
   "spice_level": "mild",
   "meal_types": [
-    "dinner"
+    "lunch"
   ],
   "assumed_staples": [
     "salt",

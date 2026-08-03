@@ -7,7 +7,9 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from src.chat.intents import classify_intent
 from src.chat.nlu import llm_route, update_conversation_summary
-from src.diet_filter import banned_ingredients_for_profile, inventory_conflicts
+from src import waste_tracker
+from src.diet_filter import banned_ingredients_for_profile, ingredient_violates, inventory_conflicts
+from src.llm import complete_json
 from src.kb import normalize_name
 from src.memory import profile_summary, save_profile, save_session
 from src.pipeline import run_plan_pipeline, run_substitute_pipeline
@@ -56,11 +58,15 @@ def new_session(profile: Optional[UserProfile] = None, use_llm: bool = True) -> 
     if profile and profile.profile_confirmed:
         session.stage = "preferences"
         session.pref_step = "duration"
+        # Long-term memory: surface waste-tracker patterns from past inventories.
+        hint = waste_tracker.history_hint(profile.user_id)
+        hint_block = f"{hint}\n\n" if hint else ""
         session = _assistant(
             session,
             "Hi! I’m your FoodPlanner.AI assistant.\n\n"
             "I’ll help you use what you already have, prioritize ingredients that may spoil soon, "
             "and create meals that match your saved dietary profile.\n\n"
+            + hint_block +
             "To get started, I’ll ask a few quick questions. You can change any answer later.\n\n"
             "How many days or meals would you like me to plan?",
             quick=["1 meal", "3 days", "5 days", "7 days", "Custom"],
@@ -391,6 +397,8 @@ def ingest_typed_inventory(session: SessionState, text: str) -> SessionState:
 
 
 def ingest_photo(session: SessionState, image_bytes: bytes, media_type: str = "image/jpeg") -> SessionState:
+    # Hash the image for duplicate-upload detection (never used to identify content).
+    session.last_image_hash = waste_tracker.image_hash(image_bytes)
     try:
         detected = detect_from_image_bytes(image_bytes, media_type=media_type)
     except Exception as e:
@@ -480,6 +488,19 @@ def confirm_inventory(session: SessionState, profile: UserProfile) -> SessionSta
     session.ranked = ranked.ranked
     crit = critical_priority_filter(ranked)
     session.critical_priority = crit.critical_priority
+
+    # Long-term waste tracking: persist the CONFIRMED inventory as a snapshot.
+    source = "image" if session.last_image_hash else "typed"
+    snapshot, duplicate, disappeared = waste_tracker.record_snapshot(
+        profile.user_id,
+        ranked.ranked,
+        source=source,
+        image_reference=session.last_image_hash,
+    )
+    session.last_snapshot_id = snapshot.snapshot_id
+    session.last_image_hash = None
+    session.pending_outcomes = disappeared
+
     session = _assistant(
         session,
         format_freshness_summary(ranked)
@@ -489,6 +510,31 @@ def confirm_inventory(session: SessionState, profile: UserProfile) -> SessionSta
         quick=["Yes, generate plan", "Adjust priorities", "Edit inventory"],
     )
     session.awaiting = "generate_plan"
+
+    if duplicate is not None:
+        session = _assistant(
+            session,
+            "One quick check: this photo looks identical to one you uploaded recently, so I haven’t "
+            "counted it as a new grocery purchase yet. Is this the same inventory as before, or new groceries?",
+            quick=["Same inventory as before", "New grocery purchase"],
+        )
+        session.awaiting = f"dup_check:{snapshot.snapshot_id}"
+    elif session.pending_outcomes:
+        session = _ask_next_outcome(session)
+    return session
+
+
+OUTCOME_QUICK = ["Used", "Still have it", "Bought again", "Spoiled", "Thrown away", "Donated", "Not sure"]
+
+
+def _ask_next_outcome(session: SessionState) -> SessionState:
+    name = session.pending_outcomes[0]
+    session = _assistant(
+        session,
+        f"Quick check for your waste tracker — what happened to the **{name}** from your previous inventory?",
+        quick=OUTCOME_QUICK,
+    )
+    session.awaiting = f"outcome:{name}"
     return session
 
 
@@ -614,6 +660,107 @@ def replace_meal(session: SessionState, profile: UserProfile, day: int) -> Sessi
         kind="meal_cards",
         meta={"plan": session.plan.model_dump()},
         quick=["Accept plan", "Replace another meal", "Help with missing ingredients"],
+    )
+    session.awaiting = "plan_feedback"
+    return session
+
+
+DETAILED_RECIPE_SYSTEM = """You write complete, kitchen-ready recipes for FoodPlanner.AI.
+Return ONLY valid JSON with this schema:
+{
+  "title": string,
+  "servings": integer,
+  "total_time_min": integer,
+  "ingredients": [{"item": string, "quantity": string}],
+  "steps": [string],
+  "tips": [string]
+}
+Rules:
+- Scale EVERY ingredient quantity precisely to the requested number of servings,
+  using specific measurements (grams/cups/tablespoons/pieces).
+- The recipe must strictly respect the dietary profile provided. Never include a
+  restricted or allergenic ingredient.
+- Write 6-12 detailed steps with pan/heat levels, timings, and visual doneness cues,
+  so a beginner can follow them.
+- Base the recipe on the dish name and the listed ingredients; simple staples
+  (salt, pepper, oil, water) may be assumed.
+"""
+
+
+def get_detailed_recipe(session: SessionState, profile: UserProfile, day: int) -> SessionState:
+    """Produce a full recipe for a planned meal: measured ingredients scaled to the
+    profile's servings plus detailed instructions. Cached on the meal after first use."""
+    if not session.plan or not session.plan.plan:
+        return _assistant(session, "There’s no meal plan yet — generate one first.", quick=["Yes, generate plan"])
+    meal = next((m for m in session.plan.plan if (m.day or m.night) == day), None)
+    if not meal:
+        return _assistant(session, f"I couldn’t find a meal on day {day}.", quick=["Review plan"])
+
+    detail = meal.detailed_recipe
+    if not detail and session.use_llm:
+        available = meal.ingredients_from_inventory + meal.extra_pantry_items
+        prompt = (
+            f"Dish: {meal.recipe}\n"
+            f"Servings required: {profile.servings}\n"
+            f"Meal type: {meal.meal_type}; target total time: about {meal.time_min} minutes\n"
+            f"Ingredients from the user's kitchen: {', '.join(available) or 'unknown'}\n"
+            f"Ingredients they plan to buy: {', '.join(meal.missing_ingredients) or 'none'}\n"
+            f"Assumed staples: {', '.join(profile.assumed_staples) or 'salt, pepper, oil, water'}\n"
+            f"Outline steps to expand: {' | '.join(meal.steps) or 'none'}\n\n"
+            f"DIETARY PROFILE (STRICT):\n{profile_summary(profile)}\n\n"
+            "Respond with the JSON object only."
+        )
+        try:
+            result = complete_json(system=DETAILED_RECIPE_SYSTEM, user=prompt, max_tokens=1800)
+            if isinstance(result, dict) and result.get("ingredients") and result.get("steps"):
+                # Deterministic safety net: reject the detail if any ingredient
+                # violates the profile, regardless of what the model claims.
+                banned = banned_ingredients_for_profile(profile)
+                safe = not any(
+                    ingredient_violates(str(i.get("item", "")), banned)
+                    for i in result["ingredients"]
+                    if isinstance(i, dict)
+                )
+                if safe:
+                    detail = result
+        except Exception:
+            detail = None
+        if detail:
+            meal.detailed_recipe = detail
+
+    if detail:
+        ing_lines = "\n".join(
+            f"• {i.get('quantity', '')} {i.get('item', '')}".strip()
+            for i in detail.get("ingredients", [])
+            if isinstance(i, dict)
+        )
+        step_lines = "\n".join(f"{n}. {s}" for n, s in enumerate(detail.get("steps", []), 1))
+        tip_lines = "\n".join(f"• {t}" for t in detail.get("tips", []) or [])
+        body = (
+            f"**{detail.get('title', meal.recipe)}** — serves {detail.get('servings', profile.servings)} · "
+            f"about {detail.get('total_time_min', meal.time_min)} min\n\n"
+            f"**Ingredients**\n{ing_lines}\n\n"
+            f"**Steps**\n{step_lines}"
+        )
+        if tip_lines:
+            body += f"\n\n**Tips**\n{tip_lines}"
+    else:
+        # Offline fallback: everything we know, with a note about measurements.
+        all_ingredients = meal.ingredients_from_inventory + meal.extra_pantry_items + meal.missing_ingredients
+        ing_lines = "\n".join(f"• {i} — adjust for {profile.servings} servings" for i in all_ingredients)
+        step_lines = "\n".join(f"{n}. {s}" for n, s in enumerate(meal.steps, 1)) or "1. No stored steps for this recipe."
+        body = (
+            f"**{meal.recipe}** — serves {profile.servings} · about {meal.time_min} min\n\n"
+            f"**Ingredients**\n{ing_lines}\n\n"
+            f"**Steps**\n{step_lines}\n\n"
+            "_Enable Claude (sidebar toggle) for exact measurements and fully detailed instructions._"
+        )
+
+    session = _assistant(
+        session,
+        body,
+        kind="recipe_detail",
+        quick=["Accept plan", f"Replace Day {day}", "Help with missing ingredients"],
     )
     session.awaiting = "plan_feedback"
     return session
@@ -822,6 +969,58 @@ def handle_message(
         session.pending_conflicts = []
         session.awaiting = None
         return confirm_inventory(session, profile), profile
+
+    # Duplicate-photo check ("same inventory or new groceries?")
+    if session.awaiting and session.awaiting.startswith("dup_check:"):
+        snap_id = session.awaiting.split(":", 1)[1]
+        same = "same" in text.lower()
+        waste_tracker.set_new_purchase_flag(profile.user_id, snap_id, not same)
+        msg = (
+            "Got it — I’ll treat it as the same inventory, not a new purchase."
+            if same
+            else "Noted — I’ve logged this as a new grocery purchase."
+        )
+        session = _assistant(session, msg, quick=["Yes, generate plan", "Edit inventory"])
+        session.awaiting = "generate_plan"
+        if session.pending_outcomes:
+            session = _ask_next_outcome(session)
+        save_session(session)
+        return session, profile
+
+    # Ingredient outcome follow-up ("what happened to the spinach?")
+    if session.awaiting and session.awaiting.startswith("outcome:"):
+        if intent == "generate_plan" or "generate" in text.lower():
+            # User skipped the follow-up; leave outcomes unresolved and move on.
+            session.pending_outcomes = []
+            session.awaiting = None
+            session = generate_plan(session, profile)
+            save_session(session)
+            return session, profile
+        name = session.awaiting.split(":", 1)[1]
+        outcome = waste_tracker.parse_outcome_answer(text)
+        waste_tracker.record_outcome(profile.user_id, name, outcome, session.last_snapshot_id)
+        session.pending_outcomes = [n for n in session.pending_outcomes if n != name]
+        if outcome in waste_tracker.WASTE_OUTCOMES:
+            ack = (
+                f"Thanks — I’ve logged **{name}** as confirmed waste. "
+                "Over time this helps me suggest better buying amounts."
+            )
+        elif outcome == "not_sure":
+            ack = f"No problem — I’ll leave **{name}** as unresolved."
+        else:
+            ack = f"Thanks — noted **{name}** as {outcome.replace('_', ' ')}."
+        if session.pending_outcomes:
+            session = _assistant(session, ack)
+            session = _ask_next_outcome(session)
+        else:
+            session = _assistant(
+                session,
+                ack + "\n\nShould I generate your meal plan now?",
+                quick=["Yes, generate plan", "Edit inventory"],
+            )
+            session.awaiting = "generate_plan"
+        save_session(session)
+        return session, profile
 
     if session.awaiting and session.awaiting.startswith("sub_select"):
         session = apply_substitution_choice(session, profile, text)
@@ -1066,6 +1265,32 @@ def handle_message(
         save_session(session)
         return session, profile
 
+    if intent == "request_recipe_steps":
+        day = meta.get("day")
+        dish = meta.get("dish", "")
+        if not day and session.plan and session.plan.plan:
+            words = set(re.findall(r"[a-z]{3,}", (dish or text).lower()))
+            for meal in session.plan.plan:
+                if set(re.findall(r"[a-z]{3,}", meal.recipe.lower())) & words:
+                    day = meal.day or meal.night
+                    break
+            if not day and len(session.plan.plan) == 1:
+                day = session.plan.plan[0].day or session.plan.plan[0].night
+        if day:
+            session = get_detailed_recipe(session, profile, day=int(day))
+        elif session.plan and session.plan.plan:
+            session = _assistant(
+                session,
+                "Which meal would you like the full recipe for?",
+                quick=[f"View steps {m.day or m.night}" for m in session.plan.plan],
+            )
+            session.awaiting = "plan_feedback"
+        else:
+            session = _assistant(session, "There’s no meal plan yet — generate one first and I’ll write out the full recipe.", quick=["Yes, generate plan"])
+            session.awaiting = "generate_plan"
+        save_session(session)
+        return session, profile
+
     if intent == "replace_meal":
         day = meta.get("day")
         if not day and session.plan and session.plan.plan:
@@ -1276,6 +1501,26 @@ def _apply_llm_route(session: SessionState, profile: UserProfile, route: dict) -
             session = replace_meal(session, profile, day=int(day))
         else:
             session = _assistant(session, "Which day should I replace?", quick=[f"Replace Day {m.day or m.night}" for m in session.plan.plan])
+            session.awaiting = "plan_feedback"
+        return session, profile
+
+    if action == "recipe_steps" and session.plan and session.plan.plan:
+        if not day:
+            words = set(items)
+            for meal in session.plan.plan:
+                if set(re.findall(r"[a-z]{3,}", meal.recipe.lower())) & words:
+                    day = meal.day or meal.night
+                    break
+        if not day and len(session.plan.plan) == 1:
+            day = session.plan.plan[0].day or session.plan.plan[0].night
+        if day:
+            session = get_detailed_recipe(session, profile, day=int(day))
+        else:
+            session = _assistant(
+                session,
+                "Which meal would you like the full recipe for?",
+                quick=[f"View steps {m.day or m.night}" for m in session.plan.plan],
+            )
             session.awaiting = "plan_feedback"
         return session, profile
 

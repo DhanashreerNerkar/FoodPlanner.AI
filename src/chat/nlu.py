@@ -20,6 +20,7 @@ ROUTER_ACTIONS = [
     "chat",            # just answer conversationally (cooking questions, chit-chat)
     "decline",         # user said no / not now to the pending question
     "replace_meal",    # user dislikes or can't cook a meal and wants an alternative
+    "recipe_steps",    # user wants the full detailed recipe for a planned meal (set day)
     "generate_plan",
     "accept_plan",
     "show_plan",
@@ -49,8 +50,9 @@ Rules:
 - ALWAYS answer the user's actual question in "reply". Never respond with a generic menu of options.
 - If the user can't cook or dislikes a planned meal and wants something else, use action "replace_meal"
   with the matching day, and put the disliked food in remember_dislikes.
-- If the user asks HOW to cook something in the plan, use action "chat" and give brief practical
-  guidance in "reply" (2-3 sentences max).
+- If the user asks HOW to cook a meal that is in the plan, or wants full instructions or
+  measurements, use action "recipe_steps" with the matching day; keep "reply" to one short
+  lead-in sentence (the app renders the full recipe separately).
 - If the user declines a pending question (e.g. "no don't generate"), use action "decline" and
   acknowledge naturally, telling them what they can do instead.
 - Respect the dietary profile strictly: never suggest food that violates diet, cultural rules, or allergies.

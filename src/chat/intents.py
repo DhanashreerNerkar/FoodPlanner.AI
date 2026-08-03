@@ -65,6 +65,15 @@ def classify_intent(text: str, stage: ChatStage, awaiting: Optional[str] = None)
     if re.search(r"replace\s+(?:this|a|another)\s+meal", t) or t == "replace meal":
         return "replace_meal", {}
 
+    # Detailed recipe requests ("View steps 2", "full recipe", "how do I make X").
+    m = re.search(r"(?:view|show|see|full|detailed)\s+(?:steps|recipe)(?:\s+(?:for\s+)?(?:day\s*)?(\d+))?", t)
+    if m:
+        return "request_recipe_steps", ({"day": int(m.group(1))} if m.group(1) else {})
+    wants_alternative = any(x in t for x in ["alternative", "something else", "different", "replace", "other option", "don't know", "dont know"])
+    m = re.search(r"how\s+(?:do\s+i|to|can\s+i)\s+(?:make|cook|prepare)\s+(.+)", t)
+    if m and not wants_alternative:
+        return "request_recipe_steps", {"dish": m.group(1).strip()}
+
     # Inventory edits
     m = re.search(r"(?:that is not|it's not|its not|not)\s+(.+?)[,.]?\s*(?:it is|it's|its|=)\s*(.+)", t)
     if m:

@@ -49,6 +49,27 @@ def test_asking_for_alternative_replaces_matching_meal():
     assert "updated Day" in reply or "Which meal" in reply
 
 
+def test_view_steps_returns_full_recipe_with_servings():
+    session, profile = _ready_session()
+    session = generate_plan(session, profile)
+    session, profile = handle_message(session, profile, "View steps 1")
+    reply = session.messages[-1].content
+    assert FALLBACK_SNIPPET not in reply
+    assert "**Ingredients**" in reply
+    assert "**Steps**" in reply
+    assert f"serves {profile.servings}" in reply
+
+
+def test_how_do_i_make_maps_to_detailed_recipe():
+    session, profile = _ready_session()
+    session = generate_plan(session, profile)
+    dish_word = session.plan.plan[0].recipe.split()[0]
+    session, profile = handle_message(session, profile, f"how do I make {dish_word}?")
+    reply = session.messages[-1].content
+    assert FALLBACK_SNIPPET not in reply
+    assert "**Ingredients**" in reply and "**Steps**" in reply
+
+
 def test_alternative_request_with_unknown_food_asks_which_meal():
     session, profile = _ready_session()
     session = generate_plan(session, profile)

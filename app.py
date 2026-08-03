@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import html
+import re
 import sys
 from pathlib import Path
 
@@ -19,6 +21,7 @@ from src.chat.orchestrator import (
     accept_plan_and_shop,
     confirm_inventory,
     generate_plan,
+    get_detailed_recipe,
     handle_message,
     ingest_photo,
     ingest_typed_inventory,
@@ -28,6 +31,7 @@ from src.chat.orchestrator import (
 )
 from src.memory import load_profile, save_profile, save_session
 from src.schemas import InventoryItem, UserProfile
+from src.waste_tracker import build_recommendations, compute_analytics
 
 
 st.set_page_config(
@@ -40,73 +44,111 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;600&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
       .stApp {
-        background: #0e1613 !important;
-        font-family: "Source Sans 3", "Segoe UI", sans-serif;
+        background: radial-gradient(1000px 500px at 85% -10%, rgba(255,122,89,0.10) 0%, transparent 60%),
+                    #12141a !important;
+        font-family: "Inter", "Segoe UI", sans-serif;
       }
       section[data-testid="stSidebar"] {
-        background: #121d17 !important;
+        background: #171a22 !important;
+        border-right: 1px solid #262b38;
       }
       h1, h2, h3, .fp-brand {
-        font-family: "Fraunces", Georgia, serif !important;
-        color: #b7e4c7 !important;
+        font-family: "Outfit", "Segoe UI", sans-serif !important;
+        color: #f3ede4 !important;
+        letter-spacing: -0.01em;
+      }
+      .fp-brand h1 {
+        background: linear-gradient(90deg, #ffb15c 0%, #ff7a59 45%, #f4536e 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent !important;
+        font-weight: 700;
       }
       section[data-testid="stSidebar"] h1,
       section[data-testid="stSidebar"] h2,
       section[data-testid="stSidebar"] h3 {
-        color: #b7e4c7 !important;
+        color: #ffb08f !important;
       }
-      .fp-sub { color: #8fb8a5; font-size: 1.05rem; margin-top: -0.4rem; }
+      .fp-sub { color: #9aa3b2; font-size: 1.02rem; margin-top: -0.4rem; }
       .fp-progress {
         display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.75rem 0 1rem;
       }
       .fp-chip {
-        padding: 0.25rem 0.65rem; border-radius: 999px; font-size: 0.78rem;
-        background: #18251e; border: 1px solid #2c443a; color: #9fc7b3;
+        padding: 0.28rem 0.7rem; border-radius: 999px; font-size: 0.78rem;
+        background: #1b1f29; border: 1px solid #2b3040; color: #9aa3b2;
       }
       .fp-chip.active {
-        background: #52b788; color: #06130c; border-color: #52b788; font-weight: 700;
+        background: linear-gradient(90deg, #ff8a5c, #f4536e); color: #ffffff;
+        border-color: transparent; font-weight: 600;
+        box-shadow: 0 2px 10px rgba(244,83,110,0.35);
       }
-      .fp-chip.done { background: #24523c; color: #d8f3dc; border-color: #24523c; }
+      .fp-chip.done { background: #2a2028; color: #ffb08f; border-color: #3b2c33; }
       .user-bubble {
-        background: #2d6a4f; color: #ffffff; padding: 0.85rem 1rem; border-radius: 16px 16px 4px 16px;
-        margin: 0.4rem 0 0.4rem 18%;
+        background: linear-gradient(135deg, #ff8a5c 0%, #f4536e 100%);
+        color: #ffffff; padding: 0.85rem 1.05rem; border-radius: 18px 18px 4px 18px;
+        margin: 0.45rem 0 0.45rem 18%;
+        box-shadow: 0 3px 14px rgba(244,83,110,0.25);
       }
       .user-bubble * { color: #ffffff !important; }
       .bot-bubble {
-        background: #1a2921; color: #e9f5ee; padding: 0.85rem 1rem;
-        border-radius: 16px 16px 16px 4px; margin: 0.4rem 18% 0.4rem 0;
-        border: 1px solid #2c443a;
+        background: #1b1f29; color: #e8eaf0; padding: 0.9rem 1.05rem;
+        border-radius: 18px 18px 18px 4px; margin: 0.45rem 18% 0.45rem 0;
+        border: 1px solid #2b3040;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+        line-height: 1.55;
       }
-      .bot-bubble * { color: #e9f5ee !important; }
-      .bot-bubble strong, .user-bubble strong { font-weight: 700; }
+      .bot-bubble * { color: #e8eaf0 !important; }
+      .bot-bubble em { color: #9aa3b2 !important; }
+      .bot-bubble strong, .user-bubble strong { font-weight: 650; color: #ffc9a8 !important; }
+      .user-bubble strong { color: #ffffff !important; }
       .meal-card {
-        background: #16221c; border: 1px solid #2c443a; color: #e9f5ee;
-        border-radius: 14px; padding: 0.9rem 1rem; margin: 0.5rem 0;
+        background: #1b1f29; border: 1px solid #2b3040; color: #e8eaf0;
+        border-left: 3px solid #ff7a59;
+        border-radius: 14px; padding: 0.95rem 1.1rem; margin: 0.55rem 0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.25);
       }
-      .meal-card * { color: #e9f5ee !important; }
-      .meal-card em { color: #9fc7b3 !important; }
+      .meal-card * { color: #e8eaf0 !important; }
+      .meal-card strong { color: #ffc9a8 !important; }
+      .meal-card em { color: #9aa3b2 !important; }
       .stButton > button {
-        border: 1px solid #2c443a !important;
-        background: #18251e !important;
-        color: #d8f3dc !important;
-        border-radius: 10px !important;
+        border: 1px solid #2b3040 !important;
+        background: #1b1f29 !important;
+        color: #dfe3ea !important;
+        border-radius: 12px !important;
+        transition: all 0.15s ease;
       }
       .stButton > button:hover {
-        border-color: #52b788 !important;
+        border-color: #ff7a59 !important;
         color: #ffffff !important;
+        box-shadow: 0 2px 12px rgba(255,122,89,0.25);
       }
       .stButton > button[kind="primary"] {
-        background: #52b788 !important;
-        color: #06130c !important;
-        border-color: #52b788 !important;
-        font-weight: 700;
+        background: linear-gradient(90deg, #ff8a5c, #f4536e) !important;
+        color: #ffffff !important;
+        border-color: transparent !important;
+        font-weight: 600;
       }
+      div[data-testid="stChatInput"] textarea { color: #e8eaf0 !important; }
     </style>
     """,
     unsafe_allow_html=True,
 )
+
+
+def _md_to_html(text: str) -> str:
+    """Convert the bot's lightweight markdown to HTML for the styled bubbles.
+
+    Messages are injected into raw HTML divs, where Streamlit does not parse
+    markdown — without this, users see literal ** and _ characters.
+    """
+    s = html.escape(text)
+    s = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", s, flags=re.DOTALL)
+    s = re.sub(r"^###\s+(.+)$", r"<strong>\1</strong>", s, flags=re.MULTILINE)
+    s = re.sub(r"(?<![\w])_([^_\n][^_]*?)_(?![\w])", r"<em>\1</em>", s, flags=re.DOTALL)
+    s = s.replace("- [ ] ", "&#9744; ")
+    return s.replace("\n", "<br>")
 
 
 def _init() -> None:
@@ -186,6 +228,92 @@ with st.sidebar:
     if chat.gap_list and st.button("View shopping list"):
         st.markdown(chat.gap_list.markdown)
 
+    st.divider()
+    if st.button("Waste tracker", use_container_width=True):
+        st.session_state.show_tracer = not st.session_state.get("show_tracer", False)
+
+# ---- Waste & purchasing tracer ----
+if st.session_state.get("show_tracer"):
+    analytics = compute_analytics(profile.user_id)
+    with st.expander("Waste & purchasing tracker", expanded=True):
+        if analytics["snapshot_count"] == 0:
+            st.info(
+                "No inventory history yet. Upload a fridge or pantry photo and confirm the "
+                "detected ingredients — each confirmed inventory becomes a snapshot here."
+            )
+        else:
+            m1, m2, m3 = st.columns(3)
+            m1.metric(
+                "Current at-risk",
+                f"{analytics['current_at_risk_percentage']:.0f}%",
+                f"{analytics['current_at_risk_count']} items",
+                delta_color="off",
+            )
+            m2.metric("Average at-risk (all snapshots)", f"{analytics['average_at_risk_percentage']:.0f}%")
+            m3.metric("Confirmed waste events", analytics["confirmed_waste_events"])
+
+            latest_date = (analytics["latest_snapshot_at"] or "")[:10]
+            st.caption(f"Latest snapshot: {latest_date} · {analytics['snapshot_count']} snapshots recorded")
+
+            if analytics["current_top_at_risk"]:
+                st.markdown(
+                    "**Use first right now:** "
+                    + ", ".join(analytics["current_top_at_risk"])
+                )
+
+            series = analytics["at_risk_percentage_series"]
+            if len(series) >= 2:
+                st.markdown("**At-risk % over time**")
+                st.line_chart(
+                    {"At-risk %": [p["at_risk_percentage"] for p in series]},
+                    height=180,
+                )
+
+            if analytics["repeated_at_risk"]:
+                st.markdown("**Repeatedly at risk** _(at risk — not confirmed waste)_")
+                for r in analytics["repeated_at_risk"]:
+                    st.markdown(
+                        f"- **{r['ingredient']}** — at risk in {r['occurrences']} recent "
+                        f"inventories (confidence {r['confidence']:.0%})"
+                    )
+
+            if analytics["unresolved"]:
+                st.markdown(
+                    "**Possibly unused (unknown outcome):** "
+                    + ", ".join(analytics["unresolved"])
+                    + " — these disappeared from your latest inventory; I haven’t assumed they were wasted."
+                )
+
+            if analytics["most_wasted"]:
+                st.markdown("**Confirmed waste** _(you told me these were spoiled or thrown away)_")
+                for w in analytics["most_wasted"]:
+                    st.markdown(f"- **{w['ingredient']}** — {w['count']} time{'s' if w['count'] > 1 else ''}")
+
+            recs = build_recommendations(profile.user_id)
+            if recs:
+                st.markdown("**Purchase suggestions**")
+                for rec in recs:
+                    label = {
+                        "buy_less": f"Buy around {rec.suggested_reduction_percentage}% less",
+                        "smaller_package": "Choose a smaller package of",
+                        "wait_before_buying": "Wait before buying more",
+                    }.get(rec.recommendation_type, "Buy less")
+                    st.markdown(
+                        f"""
+                        <div class="meal-card">
+                          <strong>{label} {rec.ingredient}</strong><br>
+                          <em>{rec.reason}</em><br>
+                          Confidence: {rec.confidence:.0%} · based on {len(rec.supporting_snapshot_ids)} snapshots
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+            elif analytics["snapshot_count"] < 3:
+                st.caption(
+                    "Purchase suggestions appear after at least 3 confirmed inventories, "
+                    "so recommendations are based on real patterns rather than one-off events."
+                )
+
 # ---- Chat history ----
 # Interactive widgets (editors, buttons, uploaders) are rendered ONLY on the most
 # recent message of each kind; older messages show static content. This prevents
@@ -200,10 +328,9 @@ last_cards_idx = _last_idx("meal_cards")
 
 for msg_idx, msg in enumerate(chat.messages):
     if msg.role == "user":
-        st.markdown(f'<div class="user-bubble">{msg.content}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="user-bubble">{_md_to_html(msg.content)}</div>', unsafe_allow_html=True)
     else:
-        # Simple markdown-ish rendering
-        st.markdown(f'<div class="bot-bubble">{msg.content.replace(chr(10), "<br>")}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="bot-bubble">{_md_to_html(msg.content)}</div>', unsafe_allow_html=True)
 
         if msg.kind == "inventory_review" and msg_idx == last_review_idx:
             st.subheader("Editable inventory")
@@ -290,8 +417,12 @@ for msg_idx, msg in enumerate(chat.messages):
                         st.rerun()
                 with mc3:
                     if st.button(f"View steps {meal.day or meal.night}", key=f"steps_{msg_idx}_{meal.night}_{meal.meal_type}"):
-                        steps = "\n".join(f"{i}. {s}" for i, s in enumerate(meal.steps, 1)) or "No steps available."
-                        st.info(steps)
+                        with st.spinner("Writing the full recipe…"):
+                            st.session_state.chat = get_detailed_recipe(
+                                chat, profile, day=int(meal.day or meal.night)
+                            )
+                        save_session(st.session_state.chat)
+                        st.rerun()
 
 # Photo upload panel — rendered once whenever the conversation is at the inventory step.
 if chat.stage == "inventory":

@@ -26,6 +26,29 @@ python scripts/smoke_demo.py
 
 Profile persists in `data/user_data/user_profile.json`. Session memory resets on **New Plan**; the profile does not.
 
+## Waste tracker (long-term memory)
+
+Every **confirmed** inventory (photo or typed) is saved as a per-user snapshot in
+`data/user_data/inventory_history.json`: each ingredient with its shelf-life category,
+freshness score/status, and a summary (total items, at-risk count/%, top 3–4 use-first items).
+Raw unconfirmed detections are never stored.
+
+- **Duplicate photos:** uploads are hashed; re-uploading the same image within 48 h is flagged
+  as a possible duplicate and the bot asks "same inventory or new groceries?" instead of
+  silently counting a new purchase.
+- **Outcomes, not assumptions:** if a previously at-risk item is missing from the next
+  inventory, the bot asks what happened (Used / Still have it / Bought again / Spoiled /
+  Thrown away / Donated / Not sure). A disappearance alone is recorded as *unresolved* —
+  only user-confirmed "spoiled" or "thrown away" count as waste
+  (`data/user_data/ingredient_outcomes.json`).
+- **Tracer UI:** the sidebar **Waste tracker** button shows current & average at-risk %,
+  the at-risk trend, repeatedly at-risk ingredients, unresolved items, confirmed waste, and
+  conservative purchase suggestions (e.g., "buy ~25% less spinach"), each with its reason and
+  confidence. Recommendations require ≥3 confirmed snapshots and the same ingredient at risk
+  in ≥2 of them; suggested reductions are clamped to 10–50%. No prices or monetary estimates.
+- **Chat memory:** new chats greet you with your recurring use-first ingredients and average
+  at-risk percentage, without ever claiming something was wasted unless you confirmed it.
+
 Stack: Streamlit chat UI · LangGraph orchestration · Claude (vision/planning) · Spoonacular (recipes) · deterministic diet/gap validators.
 
 ### Streamlit Community Cloud

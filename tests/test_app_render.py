@@ -44,3 +44,14 @@ def test_app_renders_with_duplicate_meal_card_messages():
     at.session_state["use_llm"] = False
     at.run()
     assert not at.exception, f"App crashed while rendering: {at.exception}"
+
+
+def test_waste_tracker_panel_renders():
+    session, profile = _session_with_replaced_meal()
+    at = AppTest.from_file("app.py", default_timeout=30)
+    at.session_state["chat"] = session
+    at.session_state["profile"] = profile
+    at.session_state["use_llm"] = False
+    at.session_state["show_tracer"] = True
+    at.run()
+    assert not at.exception, f"Tracer panel crashed: {at.exception}"

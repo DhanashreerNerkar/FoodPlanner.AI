@@ -1,0 +1,44 @@
+{
+  "user_id": "user_2671184ed8",
+  "diet_type": "vegetarian",
+  "diet_style": "strict-vegetarian",
+  "cultural_rules": [
+    "Halal"
+  ],
+  "cultural_constraints": [
+    "Halal"
+  ],
+  "jain_rules": [],
+  "allergies": [
+    "egg"
+  ],
+  "hard_exclusions": [
+    "egg"
+  ],
+  "dietary_restrictions": [
+    "egg"
+  ],
+  "dislikes": [],
+  "ambient_rules": [],
+  "servings": 2,
+  "household_includes_children": false,
+  "cooking_time_preference": "30_45",
+  "time_limit_min": 45,
+  "nights": 2,
+  "cooking_skill": "beginner",
+  "equipment": [
+    "stovetop"
+  ],
+  "preferred_cuisines": [],
+  "spice_level": "mild",
+  "meal_types": [
+    "dinner"
+  ],
+  "assumed_staples": [
+    "salt",
+    "pepper",
+    "oil",
+    "water"
+  ],
+  "profile_confirmed": true
+}

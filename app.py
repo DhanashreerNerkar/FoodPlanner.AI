@@ -20,7 +20,6 @@ from src.chat.intents import classify_intent
 from src.chat.orchestrator import (
     STAGE_LABELS,
     accept_plan_and_shop,
-    clear_inventory_for_reupload,
     confirm_inventory,
     generate_plan,
     get_detailed_recipe,
@@ -32,8 +31,43 @@ from src.chat.orchestrator import (
     start_substitution,
 )
 from src.memory import load_profile, load_session, save_profile, save_session
-from src.schemas import ChatMessage, InventoryItem, MealPlan, UserProfile
+from src.schemas import ChatMessage, InventoryItem, MealPlan, SessionState, UserProfile
 from src.waste_tracker import build_recommendations, compute_analytics
+
+# Prefer the orchestrator helper; keep a local fallback so a stale Cloud
+# checkout of orchestrator.py cannot break app import.
+try:
+    from src.chat.orchestrator import clear_inventory_for_reupload
+except ImportError:
+
+    def clear_inventory_for_reupload(session: SessionState) -> SessionState:
+        """Clear inventory and reopen the photo / typed-inventory step."""
+        session.inventory = []
+        session.pending_conflicts = []
+        session.ranked = []
+        session.critical_priority = []
+        session.recipe_candidates = []
+        session.plan = None
+        session.substitution = None
+        session.gap_list = None
+        session.purchased_or_made = []
+        session.last_image_hash = None
+        session.pending_outcomes = []
+        session.rejected_recipes = []
+        session.stage = "inventory"
+        session.messages.append(
+            ChatMessage(
+                role="assistant",
+                content=(
+                    "Inventory cleared. Upload a new fridge or pantry photo below, "
+                    "or type the ingredients you have now."
+                ),
+                kind="inventory_prompt",
+            )
+        )
+        session.quick_replies = ["Type ingredients instead", "Add another photo"]
+        session.awaiting = "inventory_input"
+        return session
 
 
 st.set_page_config(

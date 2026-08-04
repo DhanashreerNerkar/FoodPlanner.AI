@@ -1,12 +1,12 @@
 {
-  "user_id": "user_fbb8be0d64",
+  "user_id": "user_60c7a3458c",
   "diet_type": "vegetarian",
   "diet_style": "strict-vegetarian",
   "cultural_rules": [
-    "halal"
+    "Halal"
   ],
   "cultural_constraints": [
-    "halal"
+    "Halal"
   ],
   "jain_rules": [],
   "allergies": [
@@ -22,8 +22,8 @@
   "ambient_rules": [],
   "servings": 2,
   "household_includes_children": false,
-  "cooking_time_preference": "15_30",
-  "time_limit_min": 30,
+  "cooking_time_preference": "30_45",
+  "time_limit_min": 45,
   "nights": 3,
   "cooking_skill": "beginner",
   "equipment": [

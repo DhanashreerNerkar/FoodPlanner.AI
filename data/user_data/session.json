@@ -1,5 +1,5 @@
 {
-  "stage": "meal_plan",
+  "stage": "adjustments",
   "profile_step": "diet_type",
   "pref_step": "duration",
   "messages": [
@@ -16,7 +16,7 @@
       "meta": {
         "inventory": [
           {
-            "id": "ing_696e58b7f1",
+            "id": "ing_81ec12b915",
             "normalized_name": "spinach",
             "display_name": "spinach",
             "quantity": null,
@@ -35,7 +35,7 @@
             "notes": ""
           },
           {
-            "id": "ing_a758597eb1",
+            "id": "ing_0707ea9d9f",
             "normalized_name": "rice",
             "display_name": "rice",
             "quantity": null,
@@ -54,7 +54,7 @@
             "notes": ""
           },
           {
-            "id": "ing_0577379fa7",
+            "id": "ing_7dda82c9c9",
             "normalized_name": "tomato",
             "display_name": "tomato",
             "quantity": null,
@@ -73,7 +73,7 @@
             "notes": ""
           },
           {
-            "id": "ing_aaeda752b3",
+            "id": "ing_84bb245cee",
             "normalized_name": "garlic",
             "display_name": "garlic",
             "quantity": null,
@@ -108,7 +108,7 @@
             "in_reference": true,
             "priority_label": "use_first",
             "uncertain": false,
-            "ingredient_id": "ing_696e58b7f1"
+            "ingredient_id": "ing_81ec12b915"
           },
           {
             "item": "tomato",
@@ -118,7 +118,7 @@
             "in_reference": true,
             "priority_label": "use_soon",
             "uncertain": false,
-            "ingredient_id": "ing_0577379fa7"
+            "ingredient_id": "ing_7dda82c9c9"
           },
           {
             "item": "garlic",
@@ -128,7 +128,7 @@
             "in_reference": true,
             "priority_label": "moderate",
             "uncertain": false,
-            "ingredient_id": "ing_aaeda752b3"
+            "ingredient_id": "ing_84bb245cee"
           },
           {
             "item": "rice",
@@ -138,7 +138,7 @@
             "in_reference": true,
             "priority_label": "shelf_stable",
             "uncertain": false,
-            "ingredient_id": "ing_a758597eb1"
+            "ingredient_id": "ing_0707ea9d9f"
           }
         ]
       }
@@ -149,7 +149,7 @@
       "kind": "meal_cards",
       "meta": {
         "plan": {
-          "plan_id": "plan_42e5e10233",
+          "plan_id": "plan_f64d07867c",
           "plan": [
             {
               "night": 1,
@@ -264,7 +264,7 @@
           {
             "key": "memory",
             "label": "Refreshing short-term conversation memory",
-            "detail": "User is starting a meal plan with FoodPlanner.AI. Detected inventory includes spinach (use first, leafy_green), tomato (use soon, soft_produce), garlic and rice"
+            "detail": "User is setting up a meal plan with FoodPlanner.AI. Detected inventory includes: spinach (use first, leafy_green), tomato (use soon, soft_produce), garlic and r"
           },
           {
             "key": "pipeline_start",
@@ -306,343 +306,46 @@
     },
     {
       "role": "user",
-      "content": "I dont know how to cook xyzfood can you give me some other alternative",
+      "content": "Replace day 1",
       "kind": "text",
       "meta": {}
     },
     {
       "role": "assistant",
-      "content": "Happy to find an alternative. Which meal should I replace?",
-      "kind": "text",
-      "meta": {}
-    },
-    {
-      "role": "assistant",
-      "content": "Inventory cleared. Upload a new fridge or pantry photo below, or type the ingredients you have now.",
-      "kind": "inventory_prompt",
-      "meta": {}
-    },
-    {
-      "role": "assistant",
-      "content": "I found: lettuce, cabbage, garlic, kale, broccoli, herbs, lemon, oat milk, hummus.\n\nPlease check the list before I create your plan—I may miss items hidden behind containers or misread packaging.",
-      "kind": "inventory_review",
-      "meta": {
-        "inventory": [
-          {
-            "id": "ing_62d985c0a6",
-            "normalized_name": "lettuce",
-            "display_name": "lettuce",
-            "quantity": null,
-            "unit": null,
-            "quantity_text": null,
-            "source": "photo",
-            "confidence": 0.9,
-            "confirmed": false,
-            "opened": false,
-            "cooked": false,
-            "frozen": false,
-            "use_soon_user_flag": false,
-            "exclude_from_plan": false,
-            "do_not_use": false,
-            "needs_confirmation": false,
-            "notes": ""
-          },
-          {
-            "id": "ing_b5e4c09855",
-            "normalized_name": "cabbage",
-            "display_name": "cabbage",
-            "quantity": null,
-            "unit": null,
-            "quantity_text": null,
-            "source": "photo",
-            "confidence": 0.7,
-            "confirmed": false,
-            "opened": false,
-            "cooked": false,
-            "frozen": false,
-            "use_soon_user_flag": false,
-            "exclude_from_plan": false,
-            "do_not_use": false,
-            "needs_confirmation": true,
-            "notes": ""
-          },
-          {
-            "id": "ing_5d1ae555d5",
-            "normalized_name": "garlic",
-            "display_name": "garlic",
-            "quantity": null,
-            "unit": null,
-            "quantity_text": null,
-            "source": "photo",
-            "confidence": 0.7,
-            "confirmed": false,
-            "opened": false,
-            "cooked": false,
-            "frozen": false,
-            "use_soon_user_flag": false,
-            "exclude_from_plan": false,
-            "do_not_use": false,
-            "needs_confirmation": true,
-            "notes": ""
-          },
-          {
-            "id": "ing_b880e62621",
-            "normalized_name": "kale",
-            "display_name": "kale",
-            "quantity": null,
-            "unit": null,
-            "quantity_text": null,
-            "source": "photo",
-            "confidence": 0.7,
-            "confirmed": false,
-            "opened": false,
-            "cooked": false,
-            "frozen": false,
-            "use_soon_user_flag": false,
-            "exclude_from_plan": false,
-            "do_not_use": false,
-            "needs_confirmation": true,
-            "notes": ""
-          },
-          {
-            "id": "ing_69657c3673",
-            "normalized_name": "broccoli",
-            "display_name": "broccoli",
-            "quantity": null,
-            "unit": null,
-            "quantity_text": null,
-            "source": "photo",
-            "confidence": 0.7,
-            "confirmed": false,
-            "opened": false,
-            "cooked": false,
-            "frozen": false,
-            "use_soon_user_flag": false,
-            "exclude_from_plan": false,
-            "do_not_use": false,
-            "needs_confirmation": true,
-            "notes": ""
-          },
-          {
-            "id": "ing_29b30603f0",
-            "normalized_name": "herb",
-            "display_name": "herbs",
-            "quantity": null,
-            "unit": null,
-            "quantity_text": null,
-            "source": "photo",
-            "confidence": 0.45,
-            "confirmed": false,
-            "opened": false,
-            "cooked": false,
-            "frozen": false,
-            "use_soon_user_flag": false,
-            "exclude_from_plan": false,
-            "do_not_use": false,
-            "needs_confirmation": true,
-            "notes": ""
-          },
-          {
-            "id": "ing_956ccc8d1e",
-            "normalized_name": "lemon",
-            "display_name": "lemon",
-            "quantity": null,
-            "unit": null,
-            "quantity_text": null,
-            "source": "photo",
-            "confidence": 0.9,
-            "confirmed": false,
-            "opened": false,
-            "cooked": false,
-            "frozen": false,
-            "use_soon_user_flag": false,
-            "exclude_from_plan": false,
-            "do_not_use": false,
-            "needs_confirmation": false,
-            "notes": ""
-          },
-          {
-            "id": "ing_b91f9c34de",
-            "normalized_name": "oat milk",
-            "display_name": "oat milk",
-            "quantity": null,
-            "unit": null,
-            "quantity_text": null,
-            "source": "photo",
-            "confidence": 0.9,
-            "confirmed": false,
-            "opened": false,
-            "cooked": false,
-            "frozen": false,
-            "use_soon_user_flag": false,
-            "exclude_from_plan": false,
-            "do_not_use": false,
-            "needs_confirmation": false,
-            "notes": ""
-          },
-          {
-            "id": "ing_32497f4f03",
-            "normalized_name": "hummu",
-            "display_name": "hummus",
-            "quantity": null,
-            "unit": null,
-            "quantity_text": null,
-            "source": "photo",
-            "confidence": 0.45,
-            "confirmed": false,
-            "opened": false,
-            "cooked": false,
-            "frozen": false,
-            "use_soon_user_flag": false,
-            "exclude_from_plan": false,
-            "do_not_use": false,
-            "needs_confirmation": true,
-            "notes": ""
-          }
-        ]
-      }
-    },
-    {
-      "role": "assistant",
-      "content": "Here's what I recommend using first:\n\n**Use first:**\n• lettuce — leafy_green from shelf-life reference\n\n**Use soon:**\n• oat milk — dairy_liquid from shelf-life reference\n\n**Longer-lasting:**\n• cabbage — not in shelf-life reference; default score 3\n• garlic — allium from shelf-life reference\n• kale — not in shelf-life reference; default score 3\n• broccoli — not in shelf-life reference; default score 3\n• herb — not in shelf-life reference; default score 3\n• hummu — not in shelf-life reference; default score 3\n• lemon — citrus from shelf-life reference\n\n_These are planning-priority estimates, not food-safety guarantees. Check smell, texture, storage history, and package dates before eating._\n\nShould I generate your meal plan now?",
-      "kind": "freshness",
-      "meta": {
-        "ranked": [
-          {
-            "item": "lettuce",
-            "score": 5,
-            "class": "leafy_green",
-            "reason": "leafy_green from shelf-life reference",
-            "in_reference": true,
-            "priority_label": "use_first",
-            "uncertain": false,
-            "ingredient_id": "ing_62d985c0a6"
-          },
-          {
-            "item": "oat milk",
-            "score": 4,
-            "class": "dairy_liquid",
-            "reason": "dairy_liquid from shelf-life reference",
-            "in_reference": true,
-            "priority_label": "use_soon",
-            "uncertain": false,
-            "ingredient_id": "ing_b91f9c34de"
-          },
-          {
-            "item": "cabbage",
-            "score": 3,
-            "class": "unknown",
-            "reason": "not in shelf-life reference; default score 3",
-            "in_reference": false,
-            "priority_label": "moderate",
-            "uncertain": true,
-            "ingredient_id": "ing_b5e4c09855"
-          },
-          {
-            "item": "garlic",
-            "score": 3,
-            "class": "allium",
-            "reason": "allium from shelf-life reference",
-            "in_reference": true,
-            "priority_label": "moderate",
-            "uncertain": false,
-            "ingredient_id": "ing_5d1ae555d5"
-          },
-          {
-            "item": "kale",
-            "score": 3,
-            "class": "unknown",
-            "reason": "not in shelf-life reference; default score 3",
-            "in_reference": false,
-            "priority_label": "moderate",
-            "uncertain": true,
-            "ingredient_id": "ing_b880e62621"
-          },
-          {
-            "item": "broccoli",
-            "score": 3,
-            "class": "unknown",
-            "reason": "not in shelf-life reference; default score 3",
-            "in_reference": false,
-            "priority_label": "moderate",
-            "uncertain": true,
-            "ingredient_id": "ing_69657c3673"
-          },
-          {
-            "item": "herb",
-            "score": 3,
-            "class": "unknown",
-            "reason": "not in shelf-life reference; default score 3",
-            "in_reference": false,
-            "priority_label": "moderate",
-            "uncertain": true,
-            "ingredient_id": "ing_29b30603f0"
-          },
-          {
-            "item": "hummu",
-            "score": 3,
-            "class": "unknown",
-            "reason": "not in shelf-life reference; default score 3",
-            "in_reference": false,
-            "priority_label": "moderate",
-            "uncertain": true,
-            "ingredient_id": "ing_32497f4f03"
-          },
-          {
-            "item": "lemon",
-            "score": 2,
-            "class": "citrus",
-            "reason": "citrus from shelf-life reference",
-            "in_reference": true,
-            "priority_label": "longer",
-            "uncertain": false,
-            "ingredient_id": "ing_956ccc8d1e"
-          }
-        ]
-      }
-    },
-    {
-      "role": "user",
-      "content": "Yes, generate plan",
-      "kind": "text",
-      "meta": {}
-    },
-    {
-      "role": "assistant",
-      "content": "Here’s a draft plan based on your confirmed inventory and profile.\n\nExcluded from cooking (diet conflict): lettuce, oat milk, cabbage, kale, broccoli, herbs, hummus\n\nHow does this plan look? You can accept it, replace one meal, change the number of days, request a different cuisine, or tell me what you don’t like.",
+      "content": "Understood. I kept the other days unchanged and updated Day 1 to **Tomato Lentil Dal**.",
       "kind": "meal_cards",
       "meta": {
         "plan": {
-          "plan_id": "plan_3ffd26a720",
+          "plan_id": "plan_f64d07867c",
           "plan": [
             {
               "night": 1,
               "day": 1,
               "meal_type": "dinner",
-              "recipe": "Spinach Lemon Rice Bowl",
-              "recipe_id": null,
-              "time_min": 20,
+              "recipe": "Tomato Lentil Dal",
+              "recipe_id": "1006",
+              "time_min": 30,
               "servings": 2,
-              "uses_critical": [],
+              "uses_critical": [
+                "tomato"
+              ],
               "ingredients_from_inventory": [
-                "garlic",
-                "lemon"
+                "tomato"
               ],
-              "extra_pantry_items": [
-                "oil",
-                "salt"
-              ],
+              "extra_pantry_items": [],
               "steps": [
-                "Saute garlic in oil",
-                "Wilt spinach",
-                "Toss with rice and lemon"
+                "Cook lentils",
+                "Temper spices",
+                "Finish with tomato and lemon"
               ],
               "missing_ingredients": [
-                "spinach",
-                "rice"
+                "lentils",
+                "cumin",
+                "turmeric",
+                "lemon"
               ],
-              "why_selected": "Fits your inventory, time limit, and dietary profile.",
-              "status": "proposed",
+              "why_selected": "Replacement for Day 1 based on your feedback.",
+              "status": "replaced",
               "diet_validation_passed": true,
               "detailed_recipe": null
             },
@@ -650,29 +353,28 @@
               "night": 2,
               "day": 2,
               "meal_type": "dinner",
-              "recipe": "Tofu Stir Fry with Greens",
+              "recipe": "Spinach Lemon Rice Bowl",
               "recipe_id": null,
-              "time_min": 25,
+              "time_min": 20,
               "servings": 2,
-              "uses_critical": [],
+              "uses_critical": [
+                "spinach"
+              ],
               "ingredients_from_inventory": [
+                "spinach",
+                "rice",
                 "garlic"
               ],
-              "extra_pantry_items": [
-                "oil"
-              ],
+              "extra_pantry_items": [],
               "steps": [
-                "Brown tofu",
-                "Add greens",
-                "Finish with soy and serve over rice"
+                "Saute garlic in oil",
+                "Wilt spinach",
+                "Toss with rice and lemon"
               ],
               "missing_ingredients": [
-                "tofu",
-                "spinach",
-                "soy sauce",
-                "rice"
+                "lemon"
               ],
-              "why_selected": "Fits your inventory, time limit, and dietary profile.",
+              "why_selected": "Uses spinach first.",
               "status": "proposed",
               "diet_validation_passed": true,
               "detailed_recipe": null
@@ -681,134 +383,52 @@
               "night": 3,
               "day": 3,
               "meal_type": "dinner",
-              "recipe": "Tomato Lentil Dal",
+              "recipe": "Tofu Stir Fry with Greens",
               "recipe_id": null,
-              "time_min": 30,
+              "time_min": 25,
               "servings": 2,
-              "uses_critical": [],
+              "uses_critical": [
+                "spinach"
+              ],
               "ingredients_from_inventory": [
-                "lemon"
+                "spinach",
+                "garlic",
+                "rice"
               ],
-              "extra_pantry_items": [
-                "oil",
-                "salt"
-              ],
+              "extra_pantry_items": [],
               "steps": [
-                "Cook lentils",
-                "Temper spices",
-                "Finish with tomato and lemon"
+                "Brown tofu",
+                "Add greens",
+                "Finish with soy and serve over rice"
               ],
               "missing_ingredients": [
-                "lentils",
-                "tomato",
-                "cumin",
-                "turmeric"
+                "tofu",
+                "soy sauce"
               ],
-              "why_selected": "Fits your inventory, time limit, and dietary profile.",
+              "why_selected": "Uses spinach first.",
               "status": "proposed",
               "diet_validation_passed": true,
               "detailed_recipe": null
             }
           ],
-          "flagged_for_other_use": [
-            {
-              "item": "lettuce",
-              "reason": "Not used in any selected recipe; consider using fresh as a side salad soon since it's a critical-priority perishable."
-            },
-            {
-              "item": "oat milk",
-              "reason": "Not used in any selected recipe; critical-priority dairy-liquid substitute, best used soon in a separate dish or beverage."
-            },
-            {
-              "item": "cabbage",
-              "reason": "No matching recipe in candidate list; retain for future stir-fry or slaw use."
-            },
-            {
-              "item": "kale",
-              "reason": "No matching recipe in candidate list; retain for future sauteing or smoothie use."
-            },
-            {
-              "item": "broccoli",
-              "reason": "No matching recipe in candidate list; retain for future stir-fry or roasting use."
-            },
-            {
-              "item": "herbs",
-              "reason": "No matching recipe in candidate list; retain as garnish for future meals."
-            },
-            {
-              "item": "hummus",
-              "reason": "No matching recipe in candidate list; retain as a dip or spread for future use."
-            }
-          ],
+          "flagged_for_other_use": [],
           "clarification": null,
           "confirmed": false,
           "unresolved_gaps": []
-        },
-        "pipeline_steps": [
-          {
-            "key": "inventory",
-            "label": "Reading your confirmed inventory",
-            "detail": "9 ingredients: lettuce, cabbage, garlic, kale, broccoli, herbs, lemon, oat milk…"
-          },
-          {
-            "key": "profile",
-            "label": "Loading dietary profile (long-term memory)",
-            "detail": "vegetarian · halal · allergies: egg · 2 serving(s) · 3 day(s)"
-          },
-          {
-            "key": "memory",
-            "label": "Refreshing short-term conversation memory",
-            "detail": "User requested an alternative to a meal they didn't know how to cook (xyzfood), but didn't specify which meal to replace before clearing inventory. Inventory wa"
-          },
-          {
-            "key": "pipeline_start",
-            "label": "Starting plan pipeline (Claude)",
-            "detail": "freshness → critical → retrieve → plan → gaps"
-          },
-          {
-            "key": "stage_freshness",
-            "label": "Scoring freshness from the shelf-life knowledge base",
-            "detail": "Ranked 9 items · top: lettuce, oat milk, cabbage, garlic"
-          },
-          {
-            "key": "stage_critical",
-            "label": "Picking use-first / at-risk ingredients",
-            "detail": "2 use-first: lettuce, oat milk"
-          },
-          {
-            "key": "stage_retrieve",
-            "label": "Searching diet-safe recipes",
-            "detail": "5 verified candidates · source: fixture"
-          },
-          {
-            "key": "stage_plan",
-            "label": "Building your multi-day meal plan",
-            "detail": "Claude planner · 3 meal(s) · Spinach Lemon Rice Bowl, Tofu Stir Fry with Greens, Tomato Lentil Dal"
-          },
-          {
-            "key": "stage_gap",
-            "label": "Computing the gap-only shopping list",
-            "detail": "5 missing item(s) for the shopping list"
-          },
-          {
-            "key": "finalize",
-            "label": "Finalizing meal cards",
-            "detail": "Spinach Lemon Rice Bowl, Tofu Stir Fry with Greens, Tomato Lentil Dal"
-          }
-        ]
+        }
       }
     }
   ],
   "inventory": [
     {
-      "id": "ing_62d985c0a6",
-      "normalized_name": "lettuce",
-      "display_name": "lettuce",
+      "id": "ing_81ec12b915",
+      "normalized_name": "spinach",
+      "display_name": "spinach",
       "quantity": null,
       "unit": null,
       "quantity_text": null,
-      "source": "photo",
-      "confidence": 0.9,
+      "source": "typed",
+      "confidence": 1.0,
       "confirmed": true,
       "opened": false,
       "cooked": false,
@@ -820,14 +440,14 @@
       "notes": ""
     },
     {
-      "id": "ing_b5e4c09855",
-      "normalized_name": "cabbage",
-      "display_name": "cabbage",
+      "id": "ing_0707ea9d9f",
+      "normalized_name": "rice",
+      "display_name": "rice",
       "quantity": null,
       "unit": null,
       "quantity_text": null,
-      "source": "photo",
-      "confidence": 0.7,
+      "source": "typed",
+      "confidence": 1.0,
       "confirmed": true,
       "opened": false,
       "cooked": false,
@@ -835,94 +455,37 @@
       "use_soon_user_flag": false,
       "exclude_from_plan": false,
       "do_not_use": false,
-      "needs_confirmation": true,
+      "needs_confirmation": false,
       "notes": ""
     },
     {
-      "id": "ing_5d1ae555d5",
+      "id": "ing_7dda82c9c9",
+      "normalized_name": "tomato",
+      "display_name": "tomato",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "typed",
+      "confidence": 1.0,
+      "confirmed": true,
+      "opened": false,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": false,
+      "notes": ""
+    },
+    {
+      "id": "ing_84bb245cee",
       "normalized_name": "garlic",
       "display_name": "garlic",
       "quantity": null,
       "unit": null,
       "quantity_text": null,
-      "source": "photo",
-      "confidence": 0.7,
-      "confirmed": true,
-      "opened": false,
-      "cooked": false,
-      "frozen": false,
-      "use_soon_user_flag": false,
-      "exclude_from_plan": false,
-      "do_not_use": false,
-      "needs_confirmation": true,
-      "notes": ""
-    },
-    {
-      "id": "ing_b880e62621",
-      "normalized_name": "kale",
-      "display_name": "kale",
-      "quantity": null,
-      "unit": null,
-      "quantity_text": null,
-      "source": "photo",
-      "confidence": 0.7,
-      "confirmed": true,
-      "opened": false,
-      "cooked": false,
-      "frozen": false,
-      "use_soon_user_flag": false,
-      "exclude_from_plan": false,
-      "do_not_use": false,
-      "needs_confirmation": true,
-      "notes": ""
-    },
-    {
-      "id": "ing_69657c3673",
-      "normalized_name": "broccoli",
-      "display_name": "broccoli",
-      "quantity": null,
-      "unit": null,
-      "quantity_text": null,
-      "source": "photo",
-      "confidence": 0.7,
-      "confirmed": true,
-      "opened": false,
-      "cooked": false,
-      "frozen": false,
-      "use_soon_user_flag": false,
-      "exclude_from_plan": false,
-      "do_not_use": false,
-      "needs_confirmation": true,
-      "notes": ""
-    },
-    {
-      "id": "ing_29b30603f0",
-      "normalized_name": "herbs",
-      "display_name": "herbs",
-      "quantity": null,
-      "unit": null,
-      "quantity_text": null,
-      "source": "photo",
-      "confidence": 0.45,
-      "confirmed": true,
-      "opened": false,
-      "cooked": false,
-      "frozen": false,
-      "use_soon_user_flag": false,
-      "exclude_from_plan": false,
-      "do_not_use": false,
-      "needs_confirmation": true,
-      "notes": ""
-    },
-    {
-      "id": "ing_956ccc8d1e",
-      "normalized_name": "lemon",
-      "display_name": "lemon",
-      "quantity": null,
-      "unit": null,
-      "quantity_text": null,
-      "source": "photo",
-      "confidence": 0.9,
+      "source": "typed",
+      "confidence": 1.0,
       "confirmed": true,
       "opened": false,
       "cooked": false,
@@ -931,51 +494,13 @@
       "exclude_from_plan": false,
       "do_not_use": false,
       "needs_confirmation": false,
-      "notes": ""
-    },
-    {
-      "id": "ing_b91f9c34de",
-      "normalized_name": "oat milk",
-      "display_name": "oat milk",
-      "quantity": null,
-      "unit": null,
-      "quantity_text": null,
-      "source": "photo",
-      "confidence": 0.9,
-      "confirmed": true,
-      "opened": false,
-      "cooked": false,
-      "frozen": false,
-      "use_soon_user_flag": false,
-      "exclude_from_plan": false,
-      "do_not_use": false,
-      "needs_confirmation": false,
-      "notes": ""
-    },
-    {
-      "id": "ing_32497f4f03",
-      "normalized_name": "hummus",
-      "display_name": "hummus",
-      "quantity": null,
-      "unit": null,
-      "quantity_text": null,
-      "source": "photo",
-      "confidence": 0.45,
-      "confirmed": true,
-      "opened": false,
-      "cooked": false,
-      "frozen": false,
-      "use_soon_user_flag": false,
-      "exclude_from_plan": false,
-      "do_not_use": false,
-      "needs_confirmation": true,
       "notes": ""
     }
   ],
   "pending_conflicts": [],
   "ranked": [
     {
-      "item": "lettuce",
+      "item": "spinach",
       "score": 5,
       "class_name": "leafy_green",
       "reason": "leafy_green from shelf-life reference",
@@ -985,23 +510,13 @@
       "ingredient_id": null
     },
     {
-      "item": "oat milk",
+      "item": "tomato",
       "score": 4,
-      "class_name": "dairy_liquid",
-      "reason": "dairy_liquid from shelf-life reference",
+      "class_name": "soft_produce",
+      "reason": "soft_produce from shelf-life reference",
       "in_reference": true,
       "priority_label": "use_soon",
       "uncertain": false,
-      "ingredient_id": null
-    },
-    {
-      "item": "cabbage",
-      "score": 3,
-      "class_name": "unknown",
-      "reason": "not in shelf-life reference; default score 3",
-      "in_reference": false,
-      "priority_label": "moderate",
-      "uncertain": true,
       "ingredient_id": null
     },
     {
@@ -1015,59 +530,19 @@
       "ingredient_id": null
     },
     {
-      "item": "kale",
-      "score": 3,
-      "class_name": "unknown",
-      "reason": "not in shelf-life reference; default score 3",
-      "in_reference": false,
-      "priority_label": "moderate",
-      "uncertain": true,
-      "ingredient_id": null
-    },
-    {
-      "item": "broccoli",
-      "score": 3,
-      "class_name": "unknown",
-      "reason": "not in shelf-life reference; default score 3",
-      "in_reference": false,
-      "priority_label": "moderate",
-      "uncertain": true,
-      "ingredient_id": null
-    },
-    {
-      "item": "herb",
-      "score": 3,
-      "class_name": "unknown",
-      "reason": "not in shelf-life reference; default score 3",
-      "in_reference": false,
-      "priority_label": "moderate",
-      "uncertain": true,
-      "ingredient_id": null
-    },
-    {
-      "item": "hummu",
-      "score": 3,
-      "class_name": "unknown",
-      "reason": "not in shelf-life reference; default score 3",
-      "in_reference": false,
-      "priority_label": "moderate",
-      "uncertain": true,
-      "ingredient_id": null
-    },
-    {
-      "item": "lemon",
-      "score": 2,
-      "class_name": "citrus",
-      "reason": "citrus from shelf-life reference",
+      "item": "rice",
+      "score": 1,
+      "class_name": "grain_cooked_or_dry",
+      "reason": "grain_cooked_or_dry from shelf-life reference",
       "in_reference": true,
-      "priority_label": "longer",
+      "priority_label": "shelf_stable",
       "uncertain": false,
       "ingredient_id": null
     }
   ],
   "critical_priority": [
-    "lettuce",
-    "oat milk"
+    "spinach",
+    "tomato"
   ],
   "recipe_candidates": [
     {
@@ -1174,36 +649,36 @@
     }
   ],
   "plan": {
-    "plan_id": "plan_3ffd26a720",
+    "plan_id": "plan_f64d07867c",
     "plan": [
       {
         "night": 1,
         "day": 1,
         "meal_type": "dinner",
-        "recipe": "Spinach Lemon Rice Bowl",
-        "recipe_id": null,
-        "time_min": 20,
+        "recipe": "Tomato Lentil Dal",
+        "recipe_id": "1006",
+        "time_min": 30,
         "servings": 2,
-        "uses_critical": [],
+        "uses_critical": [
+          "tomato"
+        ],
         "ingredients_from_inventory": [
-          "garlic",
-          "lemon"
+          "tomato"
         ],
-        "extra_pantry_items": [
-          "oil",
-          "salt"
-        ],
+        "extra_pantry_items": [],
         "steps": [
-          "Saute garlic in oil",
-          "Wilt spinach",
-          "Toss with rice and lemon"
+          "Cook lentils",
+          "Temper spices",
+          "Finish with tomato and lemon"
         ],
         "missing_ingredients": [
-          "spinach",
-          "rice"
+          "lentils",
+          "cumin",
+          "turmeric",
+          "lemon"
         ],
-        "why_selected": "Fits your inventory, time limit, and dietary profile.",
-        "status": "proposed",
+        "why_selected": "Replacement for Day 1 based on your feedback.",
+        "status": "replaced",
         "diet_validation_passed": true,
         "detailed_recipe": null
       },
@@ -1211,29 +686,28 @@
         "night": 2,
         "day": 2,
         "meal_type": "dinner",
-        "recipe": "Tofu Stir Fry with Greens",
+        "recipe": "Spinach Lemon Rice Bowl",
         "recipe_id": null,
-        "time_min": 25,
+        "time_min": 20,
         "servings": 2,
-        "uses_critical": [],
+        "uses_critical": [
+          "spinach"
+        ],
         "ingredients_from_inventory": [
+          "spinach",
+          "rice",
           "garlic"
         ],
-        "extra_pantry_items": [
-          "oil"
-        ],
+        "extra_pantry_items": [],
         "steps": [
-          "Brown tofu",
-          "Add greens",
-          "Finish with soy and serve over rice"
+          "Saute garlic in oil",
+          "Wilt spinach",
+          "Toss with rice and lemon"
         ],
         "missing_ingredients": [
-          "tofu",
-          "spinach",
-          "soy sauce",
-          "rice"
+          "lemon"
         ],
-        "why_selected": "Fits your inventory, time limit, and dietary profile.",
+        "why_selected": "Uses spinach first.",
         "status": "proposed",
         "diet_validation_passed": true,
         "detailed_recipe": null
@@ -1242,65 +716,35 @@
         "night": 3,
         "day": 3,
         "meal_type": "dinner",
-        "recipe": "Tomato Lentil Dal",
+        "recipe": "Tofu Stir Fry with Greens",
         "recipe_id": null,
-        "time_min": 30,
+        "time_min": 25,
         "servings": 2,
-        "uses_critical": [],
+        "uses_critical": [
+          "spinach"
+        ],
         "ingredients_from_inventory": [
-          "lemon"
+          "spinach",
+          "garlic",
+          "rice"
         ],
-        "extra_pantry_items": [
-          "oil",
-          "salt"
-        ],
+        "extra_pantry_items": [],
         "steps": [
-          "Cook lentils",
-          "Temper spices",
-          "Finish with tomato and lemon"
+          "Brown tofu",
+          "Add greens",
+          "Finish with soy and serve over rice"
         ],
         "missing_ingredients": [
-          "lentils",
-          "tomato",
-          "cumin",
-          "turmeric"
+          "tofu",
+          "soy sauce"
         ],
-        "why_selected": "Fits your inventory, time limit, and dietary profile.",
+        "why_selected": "Uses spinach first.",
         "status": "proposed",
         "diet_validation_passed": true,
         "detailed_recipe": null
       }
     ],
-    "flagged_for_other_use": [
-      {
-        "item": "lettuce",
-        "reason": "Not used in any selected recipe; consider using fresh as a side salad soon since it's a critical-priority perishable."
-      },
-      {
-        "item": "oat milk",
-        "reason": "Not used in any selected recipe; critical-priority dairy-liquid substitute, best used soon in a separate dish or beverage."
-      },
-      {
-        "item": "cabbage",
-        "reason": "No matching recipe in candidate list; retain for future stir-fry or slaw use."
-      },
-      {
-        "item": "kale",
-        "reason": "No matching recipe in candidate list; retain for future sauteing or smoothie use."
-      },
-      {
-        "item": "broccoli",
-        "reason": "No matching recipe in candidate list; retain for future stir-fry or roasting use."
-      },
-      {
-        "item": "herbs",
-        "reason": "No matching recipe in candidate list; retain as garnish for future meals."
-      },
-      {
-        "item": "hummus",
-        "reason": "No matching recipe in candidate list; retain as a dip or spread for future use."
-      }
-    ],
+    "flagged_for_other_use": [],
     "clarification": null,
     "confirmed": false,
     "unresolved_gaps": []
@@ -1322,16 +766,17 @@
   "awaiting": "plan_feedback",
   "quick_replies": [
     "Accept plan",
-    "Replace Day 2",
-    "Make it faster",
+    "Replace another meal",
     "Help with missing ingredients"
   ],
-  "use_llm": true,
+  "use_llm": false,
   "demo_mode": false,
-  "conversation_summary": "User requested an alternative to a meal they didn't know how to cook (xyzfood), but didn't specify which meal to replace before clearing inventory. Inventory was reset; new detected items are lettuce, cabbage, garlic, kale, broccoli, herbs, lemon, oat milk, hummus. Freshness categorization: use first - lettuce (leafy_green); use soon - oat milk (dairy_liquid); longer-lasting - cabbage, garlic (allium), kale, broccoli (default scores for cabbage/kale/broccoli as not in shelf-life reference). No corrections to this new list, no dietary preferences or dislikes stated yet. User confirmed the list and requested the meal plan be generated now.",
-  "summarized_through": 10,
+  "conversation_summary": "User is setting up a meal plan with FoodPlanner.AI. Detected inventory includes: spinach (use first, leafy_green), tomato (use soon, soft_produce), garlic and rice (longer-lasting). No corrections or dietary preferences stated yet. Still need to confirm number of days/meals to plan and verify detected item list accuracy with user before finalizing plan.",
+  "summarized_through": 3,
   "last_image_hash": null,
-  "last_snapshot_id": "snap_31c79d2f8b",
+  "last_snapshot_id": "snap_c85ec18e5b",
   "pending_outcomes": [],
-  "rejected_recipes": []
+  "rejected_recipes": [
+    "Paneer Spinach Skillet"
+  ]
 }

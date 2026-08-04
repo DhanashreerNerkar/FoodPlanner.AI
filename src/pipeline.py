@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from typing import Any, Literal, TypedDict
+from typing import Any, Callable, Literal, Optional, TypedDict
 
 from src.diet_filter import filter_recipe_candidates, scan_plan_for_violations
 from src.schemas import (
@@ -195,6 +195,47 @@ def stage_substitute(state: PipelineState) -> dict[str, Any]:
     return out
 
 
+# Human-readable labels for real LangGraph nodes (shown in the UI progress panel).
+PLAN_STEP_LABELS = {
+    "stage_freshness": "Scoring freshness from the shelf-life knowledge base",
+    "stage_critical": "Picking use-first / at-risk ingredients",
+    "stage_retrieve": "Searching diet-safe recipes",
+    "stage_plan": "Building your multi-day meal plan",
+    "stage_gap": "Computing the gap-only shopping list",
+}
+
+ProgressCallback = Callable[[str, str, str], None]
+
+
+def _step_detail(node: str, update: dict, *, use_llm: bool) -> str:
+    """Turn the actual stage output into a short glimpse for the UI."""
+    if node == "stage_freshness":
+        ranked = update.get("ranked") or []
+        top = [r.get("item") for r in ranked[:4] if isinstance(r, dict) and r.get("item")]
+        return f"Ranked {len(ranked)} items" + (f" · top: {', '.join(top)}" if top else "")
+    if node == "stage_critical":
+        crit = update.get("critical_priority") or []
+        return f"{len(crit)} use-first: {', '.join(crit[:5])}" if crit else "No high-urgency items"
+    if node == "stage_retrieve":
+        cands = update.get("recipe_candidates") or []
+        sources = sorted({(c.get("source") or "unknown") for c in cands if isinstance(c, dict)})
+        src = ", ".join(sources) if sources else "none"
+        return f"{len(cands)} verified candidates · source: {src}"
+    if node == "stage_plan":
+        plan = update.get("plan") or {}
+        meals = plan.get("plan") or []
+        titles = [m.get("recipe") for m in meals if isinstance(m, dict) and m.get("recipe")]
+        engine = "Claude planner" if use_llm else "offline planner"
+        if update.get("validation_ok") is False:
+            engine += " · unsafe draft blocked, safe fallback used"
+        preview = ", ".join(titles[:3])
+        return f"{engine} · {len(meals)} meal(s)" + (f" · {preview}" if preview else "")
+    if node == "stage_gap":
+        gaps = (update.get("gap_list") or {}).get("gaps") or []
+        return f"{len(gaps)} missing item(s) for the shopping list" if gaps else "No shopping gaps yet"
+    return ""
+
+
 def run_plan_pipeline(
     *,
     profile: UserProfile,
@@ -202,7 +243,9 @@ def run_plan_pipeline(
     use_llm: bool | None = None,
     conversation_summary: str = "",
     user_request: str = "",
+    on_step: Optional[ProgressCallback] = None,
 ) -> PipelineState:
+    """Run the plan graph. If on_step is provided, stream each real node as it finishes."""
     from src.graph import build_plan_graph
 
     graph = build_plan_graph()
@@ -217,7 +260,23 @@ def run_plan_pipeline(
     }
     if use_llm is not None:
         init["use_llm"] = use_llm
-    return graph.invoke(init)
+
+    effective_llm = _use_llm(init)
+
+    if on_step is None:
+        return graph.invoke(init)
+
+    # Stream node completions so the UI can show genuine backend progress.
+    final: PipelineState = dict(init)
+    for event in graph.stream(init, stream_mode="updates"):
+        for node, update in event.items():
+            if not isinstance(update, dict):
+                continue
+            final.update(update)
+            label = PLAN_STEP_LABELS.get(node, node.replace("_", " ").title())
+            detail = _step_detail(node, update, use_llm=effective_llm)
+            on_step(node, label, detail)
+    return final
 
 
 def run_substitute_pipeline(

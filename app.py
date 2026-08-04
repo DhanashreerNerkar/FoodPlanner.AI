@@ -16,9 +16,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from src.chat.intents import classify_intent
 from src.chat.orchestrator import (
     STAGE_LABELS,
     accept_plan_and_shop,
+    clear_inventory_for_reupload,
     confirm_inventory,
     generate_plan,
     get_detailed_recipe,
@@ -29,8 +31,8 @@ from src.chat.orchestrator import (
     start_new_plan,
     start_substitution,
 )
-from src.memory import load_profile, save_profile, save_session
-from src.schemas import InventoryItem, UserProfile
+from src.memory import load_profile, load_session, save_profile, save_session
+from src.schemas import ChatMessage, InventoryItem, MealPlan, UserProfile
 from src.waste_tracker import build_recommendations, compute_analytics
 
 
@@ -110,6 +112,22 @@ st.markdown(
         box-shadow: 0 2px 10px rgba(0,0,0,0.25);
       }
       .meal-card * { color: #e8eaf0 !important; }
+      .fp-pipeline {
+        background: #161922; border: 1px solid #2b3040; border-radius: 14px;
+        padding: 0.85rem 1rem; margin: 0.45rem 18% 0.65rem 0;
+      }
+      .fp-pipeline-title {
+        color: #ffb08f; font-size: 0.82rem; font-weight: 600;
+        letter-spacing: 0.02em; text-transform: uppercase; margin-bottom: 0.55rem;
+      }
+      .fp-step {
+        display: flex; gap: 0.55rem; align-items: flex-start;
+        padding: 0.28rem 0; border-left: 2px solid #2b3040; margin-left: 0.35rem;
+        padding-left: 0.75rem;
+      }
+      .fp-step-mark { color: #ff7a59; font-size: 0.85rem; line-height: 1.4; }
+      .fp-step-label { color: #e8eaf0; font-size: 0.92rem; font-weight: 500; }
+      .fp-step-detail { color: #9aa3b2; font-size: 0.82rem; margin-top: 0.1rem; }
       .meal-card strong { color: #ffc9a8 !important; }
       .meal-card em { color: #9aa3b2 !important; }
       .stButton > button {
@@ -155,10 +173,17 @@ def _init() -> None:
     if "profile" not in st.session_state:
         st.session_state.profile = load_profile() or UserProfile()
     if "chat" not in st.session_state:
-        st.session_state.chat = new_session(
-            st.session_state.profile if st.session_state.profile.profile_confirmed else None,
-            use_llm=True,
-        )
+        # Restore short-term memory from disk when available; otherwise start fresh.
+        saved = load_session()
+        profile = st.session_state.profile
+        if saved is not None and profile.profile_confirmed:
+            saved.use_llm = True
+            st.session_state.chat = saved
+        else:
+            st.session_state.chat = new_session(
+                profile if profile.profile_confirmed else None,
+                use_llm=True,
+            )
     if "use_llm" not in st.session_state:
         st.session_state.use_llm = True
 
@@ -167,6 +192,50 @@ _init()
 profile: UserProfile = st.session_state.profile
 chat = st.session_state.chat
 chat.use_llm = st.session_state.use_llm
+
+
+def _wants_generate_plan(text: str, session) -> bool:
+    t = (text or "").strip().lower()
+    if t == "yes, generate plan":
+        return True
+    if session.awaiting == "generate_plan" and t.startswith("yes"):
+        return True
+    intent, _ = classify_intent(text, session.stage, session.awaiting)
+    return intent == "generate_plan"
+
+
+def _generate_plan_with_glimpse(session, user_profile, *, user_text: str | None = None):
+    """Run generate_plan while streaming real backend stages into st.status."""
+    if user_text:
+        session.messages.append(ChatMessage(role="user", content=user_text))
+    with st.status("Building your meal plan…", expanded=True) as status:
+        def on_step(key: str, label: str, detail: str = "") -> None:
+            # Each line mirrors an actual orchestrator / LangGraph stage completion.
+            if detail:
+                status.write(f"**{label}**  \n{detail}")
+            else:
+                status.write(f"**{label}**")
+
+        updated = generate_plan(session, user_profile, on_step=on_step)
+        status.update(label="Meal plan ready", state="complete", expanded=False)
+    return updated
+
+
+def _render_pipeline_steps(steps: list) -> None:
+    if not steps:
+        return
+    rows = ['<div class="fp-pipeline"><div class="fp-pipeline-title">How this plan was built</div>']
+    for step in steps:
+        label = html.escape(str(step.get("label") or ""))
+        detail = html.escape(str(step.get("detail") or ""))
+        rows.append('<div class="fp-step">')
+        rows.append('<div class="fp-step-mark">✓</div><div>')
+        rows.append(f'<div class="fp-step-label">{label}</div>')
+        if detail:
+            rows.append(f'<div class="fp-step-detail">{detail}</div>')
+        rows.append("</div></div>")
+    rows.append("</div>")
+    st.markdown("".join(rows), unsafe_allow_html=True)
 
 # ---- Header ----
 c1, c2, c3 = st.columns([3, 1, 1])
@@ -222,8 +291,8 @@ with st.sidebar:
     st.write(f"**Inventory items:** {inv_count}")
     st.write(f"**Planned meals:** {meal_count}")
     if st.button("Clear current inventory"):
-        chat.inventory = []
-        save_session(chat)
+        st.session_state.chat = clear_inventory_for_reupload(chat)
+        save_session(st.session_state.chat)
         st.rerun()
     if chat.gap_list and st.button("View shopping list"):
         st.markdown(chat.gap_list.markdown)
@@ -381,9 +450,24 @@ for msg_idx, msg in enumerate(chat.messages):
                     chat.stage = "inventory"
                     st.rerun()
 
-        if msg.kind == "meal_cards" and chat.plan:
+        if msg.kind == "meal_cards":
+            # Historical cards must use the snapshot stored on the message.
+            # Using chat.plan for every past bubble made every "Replace" look like
+            # it returned the same meal (all cards re-rendered the latest plan).
+            plan_snap = None
+            if msg.meta and msg.meta.get("plan"):
+                try:
+                    plan_snap = MealPlan.model_validate(msg.meta["plan"])
+                except Exception:
+                    plan_snap = None
+            if plan_snap is None:
+                plan_snap = chat.plan
+            if not plan_snap or not plan_snap.plan:
+                continue
+            if msg.meta and msg.meta.get("pipeline_steps"):
+                _render_pipeline_steps(msg.meta["pipeline_steps"])
             interactive = msg_idx == last_cards_idx
-            for meal in chat.plan.plan:
+            for meal in plan_snap.plan:
                 st.markdown(
                     f"""
                     <div class="meal-card">
@@ -405,6 +489,7 @@ for msg_idx, msg in enumerate(chat.messages):
                         st.session_state.chat, st.session_state.profile = handle_message(
                             chat, profile, f"Replace day {meal.day or meal.night}"
                         )
+                        save_session(st.session_state.chat)
                         st.rerun()
                 with mc2:
                     if meal.missing_ingredients and st.button(
@@ -424,8 +509,10 @@ for msg_idx, msg in enumerate(chat.messages):
                         save_session(st.session_state.chat)
                         st.rerun()
 
-# Photo upload panel — rendered once whenever the conversation is at the inventory step.
-if chat.stage == "inventory":
+# Photo upload panel — shown at the inventory step, or when the bot is waiting for
+# a new photo after the user cleared inventory / asked to add another photo.
+_show_upload = chat.stage == "inventory" or chat.awaiting == "inventory_input"
+if _show_upload:
     up = st.file_uploader(
         "Fridge / pantry photo",
         type=["jpg", "jpeg", "png", "webp"],
@@ -449,8 +536,8 @@ if chat.quick_replies:
         with cols[i % len(cols)]:
             if st.button(qr, key=f"qr_{len(chat.messages)}_{i}"):
                 # Special short-circuits
-                if qr.lower() == "yes, generate plan":
-                    st.session_state.chat = generate_plan(chat, profile)
+                if _wants_generate_plan(qr, chat):
+                    st.session_state.chat = _generate_plan_with_glimpse(chat, profile, user_text=qr)
                 elif qr.lower() in {"confirm plan", "accept plan"}:
                     if qr.lower() == "accept plan" and chat.plan and not chat.plan.confirmed:
                         st.session_state.chat, st.session_state.profile = handle_message(chat, profile, "Accept plan")
@@ -468,7 +555,10 @@ if chat.quick_replies:
 # Chat input
 prompt = st.chat_input("Message FoodPlanner.AI…")
 if prompt:
-    st.session_state.chat, st.session_state.profile = handle_message(chat, profile, prompt)
+    if _wants_generate_plan(prompt, chat):
+        st.session_state.chat = _generate_plan_with_glimpse(chat, profile, user_text=prompt)
+    else:
+        st.session_state.chat, st.session_state.profile = handle_message(chat, profile, prompt)
     save_session(st.session_state.chat)
     if st.session_state.profile.profile_confirmed:
         save_profile(st.session_state.profile)

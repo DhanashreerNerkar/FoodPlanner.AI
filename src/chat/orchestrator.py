@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from src.chat.intents import classify_intent
 from src.chat.nlu import llm_route, update_conversation_summary
@@ -17,7 +17,9 @@ from src.schemas import (
     ChatMessage,
     InventoryItem,
     MealPlan,
+    PlanMeal,
     PlanPreferences,
+    RecipeCandidate,
     SessionState,
     SubstitutionResult,
     UserProfile,
@@ -99,6 +101,35 @@ def start_new_plan(session: SessionState, profile: UserProfile) -> SessionState:
     use_llm = session.use_llm
     session = SessionState(use_llm=use_llm, stage="preferences", pref_step="duration")
     return new_session(profile, use_llm=use_llm)
+
+
+def clear_inventory_for_reupload(session: SessionState) -> SessionState:
+    """Clear inventory and reopen the photo / typed-inventory step.
+
+    Used by the sidebar "Clear current inventory" action so the user can upload
+    a second fridge photo without having to start an entirely new plan.
+    """
+    session.inventory = []
+    session.pending_conflicts = []
+    session.ranked = []
+    session.critical_priority = []
+    session.recipe_candidates = []
+    session.plan = None
+    session.substitution = None
+    session.gap_list = None
+    session.purchased_or_made = []
+    session.last_image_hash = None
+    session.pending_outcomes = []
+    session.rejected_recipes = []
+    session.stage = "inventory"
+    session = _assistant(
+        session,
+        "Inventory cleared. Upload a new fridge or pantry photo below, or type the ingredients you have now.",
+        kind="inventory_prompt",
+        quick=["Type ingredients instead", "Add another photo"],
+    )
+    session.awaiting = "inventory_input"
+    return session
 
 
 def _parse_list(text: str) -> List[str]:
@@ -290,10 +321,13 @@ def _handle_profile(session: SessionState, profile: UserProfile, text: str) -> T
         save_profile(profile)
         session.stage = "preferences"
         session.pref_step = "duration"
+        hint = waste_tracker.history_hint(profile.user_id)
+        hint_block = f"{hint}\n\n" if hint else ""
         session = _assistant(
             session,
             "Great — profile saved.\n\n"
             "Hi! I’m your FoodPlanner.AI assistant. I’ll help you use what you already have and match your dietary profile.\n\n"
+            + hint_block +
             "How many days or meals would you like me to plan?",
             quick=["1 meal", "3 days", "5 days", "7 days", "Custom"],
         )
@@ -538,7 +572,12 @@ def _ask_next_outcome(session: SessionState) -> SessionState:
     return session
 
 
-def generate_plan(session: SessionState, profile: UserProfile) -> SessionState:
+def generate_plan(
+    session: SessionState,
+    profile: UserProfile,
+    on_step: Optional[Callable[[str, str, str], None]] = None,
+) -> SessionState:
+    """Build a meal plan. on_step(key, label, detail) reports real backend stages to the UI."""
     inventory = _active_inventory_names(session)
     if not inventory:
         session = _assistant(session, "I need a confirmed inventory before I can plan. Please add ingredients first.")
@@ -547,6 +586,28 @@ def generate_plan(session: SessionState, profile: UserProfile) -> SessionState:
 
     profile.nights = session.preferences.days or profile.nights
     profile.sync_aliases()
+
+    pipeline_steps: List[Dict[str, str]] = []
+
+    def emit(key: str, label: str, detail: str = "") -> None:
+        pipeline_steps.append({"key": key, "label": label, "detail": detail})
+        if on_step:
+            on_step(key, label, detail)
+
+    emit(
+        "inventory",
+        "Reading your confirmed inventory",
+        f"{len(inventory)} ingredients: {', '.join(inventory[:8])}"
+        + ("…" if len(inventory) > 8 else ""),
+    )
+    emit(
+        "profile",
+        "Loading dietary profile (long-term memory)",
+        f"{profile.diet_type}"
+        + (f" · {', '.join(profile.cultural_rules)}" if profile.cultural_rules else "")
+        + (f" · allergies: {', '.join(profile.allergies)}" if profile.allergies else "")
+        + f" · {profile.servings} serving(s) · {profile.nights} day(s)",
+    )
 
     # Refresh short-term memory, then build this call's prompt as
     # long-term memory (profile) + short-term memory (summary) + the user's
@@ -557,6 +618,13 @@ def generate_plan(session: SessionState, profile: UserProfile) -> SessionState:
         if session.messages and session.messages[-1].role == "user"
         else ""
     )
+    if session.conversation_summary:
+        emit("memory", "Refreshing short-term conversation memory", session.conversation_summary[:160])
+    else:
+        emit("memory", "Refreshing short-term conversation memory", "No prior summary yet — using this session’s inventory and profile")
+
+    engine = "Claude" if session.use_llm else "offline deterministic planner"
+    emit("pipeline_start", f"Starting plan pipeline ({engine})", "freshness → critical → retrieve → plan → gaps")
 
     try:
         result = run_plan_pipeline(
@@ -565,13 +633,20 @@ def generate_plan(session: SessionState, profile: UserProfile) -> SessionState:
             use_llm=session.use_llm,
             conversation_summary=session.conversation_summary,
             user_request=user_request,
+            on_step=emit,
         )
     except Exception:
+        emit("retry", "Primary pipeline failed — retrying with offline recipes", "Claude/API unavailable or invalid output")
         session = _assistant(
             session,
             "I had trouble structuring that result. I’m retrying with the same confirmed information using the offline recipe collection.",
         )
-        result = run_plan_pipeline(profile=profile, confirmed_items=inventory, use_llm=False)
+        result = run_plan_pipeline(
+            profile=profile,
+            confirmed_items=inventory,
+            use_llm=False,
+            on_step=emit,
+        )
 
     if not result.get("recipe_candidates") and not result.get("plan"):
         session = _assistant(
@@ -582,16 +657,7 @@ def generate_plan(session: SessionState, profile: UserProfile) -> SessionState:
         )
         return session
 
-    plan = MealPlan.model_validate(result["plan"])
-    # Enrich why_selected
-    for meal in plan.plan:
-        if not meal.why_selected and meal.uses_critical:
-            meal.why_selected = f"Uses {', '.join(meal.uses_critical)} first."
-        elif not meal.why_selected:
-            meal.why_selected = "Fits your inventory, time limit, and dietary profile."
-        meal.status = "proposed"
-    session.plan = plan
-    from src.schemas import RankedItem, RecipeCandidate
+    from src.schemas import RankedItem
 
     raw_ranked = result.get("ranked") or []
     session.ranked = [
@@ -602,6 +668,37 @@ def generate_plan(session: SessionState, profile: UserProfile) -> SessionState:
     session.recipe_candidates = [
         c if isinstance(c, RecipeCandidate) else RecipeCandidate.model_validate(c) for c in raw_cands
     ]
+
+    plan = MealPlan.model_validate(result["plan"])
+    # If the user previously rejected recipes (via Replace), rebuild the plan from the
+    # remaining candidates so regenerating doesn't just return the same dishes.
+    rejected = {normalize_name(r) for r in session.rejected_recipes}
+    if rejected and session.recipe_candidates:
+        from src.stages.planning import plan_meals_deterministic
+
+        alt_cands = [c for c in session.recipe_candidates if normalize_name(c.title) not in rejected]
+        if alt_cands:
+            emit(
+                "rejected",
+                "Skipping recipes you already rejected this session",
+                ", ".join(session.rejected_recipes[:6]),
+            )
+            plan = plan_meals_deterministic(
+                inventory=inventory,
+                critical_priority=session.critical_priority,
+                recipe_candidates=alt_cands,
+                profile=profile,
+            )
+        # If every remaining title was still rejected, keep the pipeline plan but tell the user below.
+
+    # Enrich why_selected
+    for meal in plan.plan:
+        if not meal.why_selected and meal.uses_critical:
+            meal.why_selected = f"Uses {', '.join(meal.uses_critical)} first."
+        elif not meal.why_selected:
+            meal.why_selected = "Fits your inventory, time limit, and dietary profile."
+        meal.status = "proposed"
+    session.plan = plan
     session.stage = "meal_plan"
 
     flagged = plan.flagged_for_other_use
@@ -609,54 +706,202 @@ def generate_plan(session: SessionState, profile: UserProfile) -> SessionState:
     if flagged:
         flag_note = "\n\nExcluded from cooking (diet conflict): " + ", ".join(f.item for f in flagged)
 
+    titles = [m.recipe for m in plan.plan]
+    emit("finalize", "Finalizing meal cards", ", ".join(titles) if titles else "empty plan")
+
+    replace_day = plan.plan[0].day or plan.plan[0].night if plan.plan else 1
+    if len(plan.plan) > 1:
+        # Prefer offering a mid-plan day when more than one meal exists.
+        replace_day = plan.plan[min(1, len(plan.plan) - 1)].day or plan.plan[min(1, len(plan.plan) - 1)].night
     session = _assistant(
         session,
         "Here’s a draft plan based on your confirmed inventory and profile." + flag_note
         + "\n\nHow does this plan look? You can accept it, replace one meal, change the number of days, "
         "request a different cuisine, or tell me what you don’t like.",
         kind="meal_cards",
-        meta={"plan": plan.model_dump()},
-        quick=["Accept plan", "Replace Day 2", "Make it faster", "Help with missing ingredients"],
+        meta={"plan": plan.model_dump(), "pipeline_steps": pipeline_steps},
+        quick=[
+            "Accept plan",
+            f"Replace Day {replace_day}",
+            "Make it faster",
+            "Help with missing ingredients",
+        ],
     )
     session.awaiting = "plan_feedback"
     return session
 
 
+def _candidate_to_meal(
+    cand: RecipeCandidate,
+    *,
+    day: int,
+    meal_type: str,
+    profile: UserProfile,
+    inventory: List[str],
+    critical: List[str],
+    why: str,
+) -> PlanMeal:
+    inv_n = {normalize_name(i) for i in inventory}
+    staples = {"salt", "oil", "water", "pepper"}
+    inv_used = [i for i in cand.ingredients if normalize_name(i) in inv_n]
+    missing = [
+        i
+        for i in cand.ingredients
+        if normalize_name(i) not in inv_n and normalize_name(i) not in staples
+    ]
+    uses_crit = [
+        c for c in critical if any(normalize_name(c) in normalize_name(i) for i in cand.ingredients)
+    ]
+    return PlanMeal(
+        night=day,
+        day=day,
+        meal_type=meal_type,
+        recipe=cand.title,
+        recipe_id=str(cand.id) if cand.id is not None else None,
+        time_min=min(cand.ready_in_minutes or profile.time_limit_min, profile.time_limit_min),
+        servings=profile.servings,
+        uses_critical=uses_crit,
+        ingredients_from_inventory=inv_used,
+        steps=cand.steps[:6] or [f"Prepare {cand.title} using available ingredients."],
+        missing_ingredients=missing[:6],
+        why_selected=why,
+        status="replaced",
+    )
+
+
+def _rank_candidates(
+    candidates: List[RecipeCandidate],
+    inventory: List[str],
+    critical: List[str],
+) -> List[RecipeCandidate]:
+    inv_n = {normalize_name(i) for i in inventory}
+    crit_n = {normalize_name(c) for c in critical}
+    scored = []
+    for cand in candidates:
+        ing_n = {normalize_name(i) for i in cand.ingredients}
+        scored.append((len(ing_n & crit_n), len(ing_n & inv_n), cand))
+    scored.sort(key=lambda t: (t[0], t[1]), reverse=True)
+    return [c for _, _, c in scored]
+
+
+def _recipe_key(title: str) -> str:
+    """Stable key for recipe titles. Do NOT use ingredient normalize_name — that
+    singularizes trailing 's' and can collide unrelated titles."""
+    return " ".join((title or "").strip().lower().split())
+
+
 def replace_meal(session: SessionState, profile: UserProfile, day: int) -> SessionState:
+    """Swap one day for a DIFFERENT verified recipe. Never re-suggest the same title."""
     if not session.plan:
         return _assistant(session, "There’s no plan to edit yet.")
+
+    day = int(day)
+    target_idx = next(
+        (i for i, m in enumerate(session.plan.plan) if int(m.day or m.night or 0) == day),
+        None,
+    )
+    if target_idx is None:
+        return _assistant(
+            session,
+            f"I couldn’t find Day {day} in the current plan.",
+            quick=[f"Replace Day {m.day or m.night}" for m in session.plan.plan],
+        )
+
+    target = session.plan.plan[target_idx]
+    current_title = target.recipe
     inventory = _active_inventory_names(session)
-    # Regenerate full plan then stitch: keep other days
-    result = run_plan_pipeline(profile=profile, confirmed_items=inventory, use_llm=False)
-    new_plan = MealPlan.model_validate(result["plan"])
-    old = session.plan
-    for meal in old.plan:
-        if (meal.day or meal.night) == day:
-            replacement = next((m for m in new_plan.plan if (m.day or m.night) == day), None)
-            if not replacement and new_plan.plan:
-                replacement = new_plan.plan[0]
-                replacement.night = day
-                replacement.day = day
-            if replacement:
-                # Avoid identical title if possible
-                alts = [m for m in new_plan.plan if m.recipe != meal.recipe]
-                if alts:
-                    replacement = alts[0]
-                    replacement.night = day
-                    replacement.day = day
-                meal.recipe = replacement.recipe
-                meal.time_min = replacement.time_min
-                meal.ingredients_from_inventory = replacement.ingredients_from_inventory
-                meal.missing_ingredients = replacement.missing_ingredients
-                meal.steps = replacement.steps
-                meal.uses_critical = replacement.uses_critical
-                meal.why_selected = f"Replacement for Day {day} based on your feedback."
-                meal.status = "replaced"
-            break
+
+    # Track rejected titles so we never cycle back within this session.
+    if current_title and _recipe_key(current_title) not in {_recipe_key(r) for r in session.rejected_recipes}:
+        session.rejected_recipes.append(current_title)
+
+    exclude = {_recipe_key(r) for r in session.rejected_recipes}
+    exclude |= {_recipe_key(m.recipe) for m in session.plan.plan if m.recipe}
+    exclude.add(_recipe_key(current_title))
+
+    def _alts(cands: List[RecipeCandidate]) -> List[RecipeCandidate]:
+        return [c for c in cands if _recipe_key(c.title) not in exclude]
+
+    def _merge_candidates(extra: List[RecipeCandidate]) -> None:
+        seen = {_recipe_key(c.title) for c in session.recipe_candidates}
+        for c in extra:
+            key = _recipe_key(c.title)
+            if key and key not in seen:
+                session.recipe_candidates.append(c)
+                seen.add(key)
+
+    # Always widen the pool with diet-safe fixtures + a fresh search so we are not
+    # stuck with a single Spoonacular hit (the usual cause of "same plan again").
+    from src.diet_filter import filter_recipe_candidates
+    from src.kb import load_fixture_recipes
+    from src.tools.spoonacular import _candidate_from_fixture, search_by_ingredients
+
+    fixtures = filter_recipe_candidates(
+        [_candidate_from_fixture(r) for r in load_fixture_recipes()],
+        profile,
+    )
+    _merge_candidates(fixtures)
+    try:
+        _merge_candidates(search_by_ingredients(inventory, profile, number=12))
+    except Exception:
+        pass
+
+    alts = _alts(session.recipe_candidates)
+    if not alts:
+        session = _assistant(
+            session,
+            f"I don’t have a different verified recipe for Day {day} that still fits your "
+            f"inventory and dietary profile. **{current_title}** is the best match I have right now.\n\n"
+            "I can keep it, help with a missing ingredient, or you can add something to your inventory "
+            "so I have more options.",
+            kind="meal_cards",
+            meta={"plan": session.plan.model_dump()},
+            quick=["Keep this meal", "Help with missing ingredients", "Add an ingredient"],
+        )
+        session.awaiting = "plan_feedback"
+        return session
+
+    ranked = _rank_candidates(alts, inventory, session.critical_priority)
+    # Rotate through alternatives so repeated "Replace" clicks keep changing.
+    pick = ranked[(len(session.rejected_recipes) - 1) % len(ranked)]
+    if _recipe_key(pick.title) == _recipe_key(current_title):
+        pick = next((c for c in ranked if _recipe_key(c.title) != _recipe_key(current_title)), None)
+    if pick is None:
+        session = _assistant(
+            session,
+            f"I couldn’t find a different dish than **{current_title}** that still fits your constraints.",
+            kind="meal_cards",
+            meta={"plan": session.plan.model_dump()},
+            quick=["Keep this meal", "Help with missing ingredients"],
+        )
+        session.awaiting = "plan_feedback"
+        return session
+
+    replacement = _candidate_to_meal(
+        pick,
+        day=day,
+        meal_type=target.meal_type,
+        profile=profile,
+        inventory=inventory,
+        critical=session.critical_priority,
+        why=f"Replacement for Day {day} based on your feedback.",
+    )
+
+    # Rebuild the plan list so the change cannot be lost to a stale reference.
+    new_meals = list(session.plan.plan)
+    new_meals[target_idx] = replacement
+    session.plan = MealPlan(
+        plan_id=session.plan.plan_id,
+        plan=new_meals,
+        flagged_for_other_use=session.plan.flagged_for_other_use,
+        clarification=session.plan.clarification,
+        confirmed=False,
+        unresolved_gaps=session.plan.unresolved_gaps,
+    )
     session.stage = "adjustments"
     session = _assistant(
         session,
-        f"Understood. I kept the other days unchanged and updated Day {day}.",
+        f"Understood. I kept the other days unchanged and updated Day {day} to **{replacement.recipe}**.",
         kind="meal_cards",
         meta={"plan": session.plan.model_dump()},
         quick=["Accept plan", "Replace another meal", "Help with missing ingredients"],
@@ -1055,8 +1300,8 @@ def handle_message(
         if "type" in text.lower() or "manual" in text.lower() or "skip photo" in text.lower():
             session = _assistant(
                 session,
-                "Type your ingredients as a comma-separated list.",
-                quick=["spinach, tomatoes, rice, milk"],
+                "Type your ingredients as a comma-separated list (for example: spinach, rice, tomatoes).",
+                quick=["Add another photo"],
             )
             session.awaiting = "typed_inventory"
             save_session(session)
@@ -1424,8 +1669,9 @@ def handle_message(
             return session, profile
 
     # Conversational fallback: let Claude interpret the free-form message with
-    # long-term memory (saved profile) and short-term memory (recent chat, plan, inventory).
+    # long-term memory (saved profile) and short-term memory (summary, recent chat, plan, inventory).
     if session.use_llm:
+        session = update_conversation_summary(session, min_new_messages=4)
         route = llm_route(text, session, profile)
         if route:
             session, profile = _apply_llm_route(session, profile, route)

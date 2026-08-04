@@ -116,14 +116,19 @@ def llm_route(text: str, session: SessionState, profile: UserProfile) -> Optiona
     inventory = ", ".join(
         i.display_name for i in session.inventory if not i.exclude_from_plan
     ) or "empty"
+    summary = session.conversation_summary.strip() or "None yet."
+    rejected = ", ".join(session.rejected_recipes) or "none"
     user_prompt = (
         f"SAVED PROFILE (long-term memory):\n{profile_summary(profile)}\n\n"
+        f"CONVERSATION SUMMARY (short-term memory):\n{summary}\n\n"
         f"CONVERSATION STAGE: {session.stage} | pending question: {session.awaiting or 'none'}\n\n"
         f"CURRENT INVENTORY: {inventory}\n\n"
         f"CURRENT PLAN:\n{_plan_context(session)}\n\n"
+        f"RECIPES ALREADY REJECTED THIS SESSION: {rejected}\n\n"
         f"RECENT CONVERSATION (short-term memory):\n{_recent_messages(session)}\n\n"
         f"USER'S LATEST MESSAGE:\n{text}\n\n"
-        "Respond with the JSON object only."
+        "Respond with the JSON object only. Ground every reply in the saved profile, "
+        "summary, inventory, and plan above — do not invent pantry items or preferences."
     )
     try:
         result = complete_json(system=SYSTEM, user=user_prompt, max_tokens=600)

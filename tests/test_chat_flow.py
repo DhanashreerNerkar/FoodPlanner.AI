@@ -58,10 +58,56 @@ def test_replace_one_meal_keeps_others():
     assert session.plan and len(session.plan.plan) >= 1
     original = {m.night: m.recipe for m in session.plan.plan}
     keep_day = 1
-    session = replace_meal(session, profile, day=2 if len(session.plan.plan) > 1 else 1)
-    # Day 1 title still present if we replaced day 2
+    replace_day = 2 if len(session.plan.plan) > 1 else 1
+    before = next(m.recipe for m in session.plan.plan if (m.day or m.night) == replace_day)
+    session = replace_meal(session, profile, day=replace_day)
+    after = next(m.recipe for m in session.plan.plan if (m.day or m.night) == replace_day)
+    # The replaced day must actually change — not echo the same dish.
+    assert after != before, f"Replace left Day {replace_day} as {before}"
     if len(original) > 1:
-        assert any((m.day or m.night) == keep_day for m in session.plan.plan)
+        assert any((m.day or m.night) == keep_day and m.recipe == original[keep_day] for m in session.plan.plan)
+
+
+def test_replace_meal_never_returns_same_recipe():
+    """Regression: Replace Day N must not re-suggest the dish the user just rejected."""
+    profile = build_profile(diet_type="vegetarian", nights=1)
+    session = new_session(profile, use_llm=False)
+    session = ingest_typed_inventory(session, "spinach, rice, lemon, chickpeas, tomato, garlic")
+    for i in session.inventory:
+        i.confirmed = True
+    session = generate_plan(session, profile)
+    assert session.plan and session.plan.plan
+    first = session.plan.plan[0].recipe
+    session = replace_meal(session, profile, day=1)
+    second = session.plan.plan[0].recipe
+    assert second != first, f"Replace kept {first}"
+    assert first in session.rejected_recipes
+    # Message snapshot must also show the new dish (UI reads meta, not live plan alone).
+    last_cards = next(m for m in reversed(session.messages) if m.kind == "meal_cards")
+    assert last_cards.meta["plan"]["plan"][0]["recipe"] == second
+    # A second replace should also differ from both prior dishes when alternatives exist.
+    session = replace_meal(session, profile, day=1)
+    third = session.plan.plan[0].recipe
+    assert third not in {first, second}, f"Third replace reused {third}"
+
+
+def test_replace_via_handle_message_changes_dish():
+    profile = build_profile(
+        diet_type="vegetarian",
+        cultural_rules=["halal"],
+        allergies=["egg"],
+        nights=1,
+    )
+    session = new_session(profile, use_llm=False)
+    session = ingest_typed_inventory(session, "onion, tomato, rice, chickpeas, cucumber, lemon, garlic, oil, spinach")
+    for i in session.inventory:
+        i.confirmed = True
+    session = generate_plan(session, profile)
+    before = session.plan.plan[0].recipe
+    session, profile = handle_message(session, profile, "Replace day 1")
+    after = session.plan.plan[0].recipe
+    assert after != before
+    assert f"updated Day 1 to **{after}**" in session.messages[-1].content
 
 
 def test_new_plan_keeps_profile():

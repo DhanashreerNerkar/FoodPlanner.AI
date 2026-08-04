@@ -426,3 +426,5 @@ class SessionState(BaseModel):
     last_image_hash: Optional[str] = None
     last_snapshot_id: Optional[str] = None
     pending_outcomes: List[str] = Field(default_factory=list)
+    # Recipes the user asked to replace — never re-suggest these in this session.
+    rejected_recipes: List[str] = Field(default_factory=list)

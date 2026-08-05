@@ -1,29 +1,182 @@
 {
-  "stage": "adjustments",
-  "profile_step": "diet_type",
-  "pref_step": "duration",
+  "stage": "freshness",
+  "profile_step": "confirm",
+  "pref_step": "meals",
   "messages": [
     {
       "role": "assistant",
-      "content": "Hi! I’m your FoodPlanner.AI assistant.\n\nI’ll help you use what you already have, prioritize ingredients that may spoil soon, and create meals that match your saved dietary profile.\n\nTo get started, I’ll ask a few quick questions. You can change any answer later.\n\nHow many days or meals would you like me to plan?",
+      "content": "Welcome to FoodPlanner.AI\n\nBefore we look inside your fridge, let’s make sure every recommendation fits your dietary needs.\n\nWhat type of diet should every recommendation follow?",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Non-vegetarian",
       "kind": "text",
       "meta": {}
     },
     {
       "role": "assistant",
-      "content": "I found these items. Please check the list before I create your plan—I may miss items hidden behind containers or misread packaging.",
+      "content": "Got it. Do you follow any cultural or religious food rules?",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Hindu dietary preference",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Saved. I’ll treat those as hard restrictions.\n\nDo you have any food allergies or ingredients that must never be included?",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "None",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "How many people are you cooking for?",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "1",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "How much time do you normally want to spend cooking?",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Under 15 minutes",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Here is what I’ll follow:\n\n• Diet: Non Vegetarian\n• Food rules: Halal, Hindu dietary preference\n• Allergies: None reported\n• Dislikes: None\n• Servings: 1\n• Cooking time: about 15 minutes\n• Equipment: stovetop\n• Skill level: beginner\n\nDoes everything look correct?",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Save and continue",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Great — profile saved.\n\nHi! I’m your FoodPlanner.AI assistant. I’ll help you use what you already have and match your dietary profile.\n\nHow many days or meals would you like me to plan?",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "1 meal",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Which meals should I include?",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Dinner",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Great. Now show me what you already have.\n\nUpload or take a clear photo of your fridge or pantry, or type your ingredients. I'll assume you have basics like salt, pepper, oil, and water — tell me if not.\n\nYou'll be able to correct everything I detect before I plan anything.",
+      "kind": "inventory_prompt",
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "I found: pickled vegetables, honey, jam, cured ham, sausage, cheese, eggs, feta cheese, wine, bananas, grapefruit, tangerines, apple, kiwi, lemon, carrots, potatoes, onion.\n\nPlease check the list before I create your plan—I may miss items hidden behind containers or misread packaging.",
       "kind": "inventory_review",
       "meta": {
         "inventory": [
           {
-            "id": "ing_81ec12b915",
-            "normalized_name": "spinach",
-            "display_name": "spinach",
+            "id": "ing_dba6cf820d",
+            "normalized_name": "pickled vegetable",
+            "display_name": "pickled vegetables",
             "quantity": null,
             "unit": null,
             "quantity_text": null,
-            "source": "typed",
-            "confidence": 1.0,
+            "source": "photo",
+            "confidence": 0.7,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": true,
+            "notes": ""
+          },
+          {
+            "id": "ing_baa4a35c76",
+            "normalized_name": "honey",
+            "display_name": "honey",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.45,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": true,
+            "notes": ""
+          },
+          {
+            "id": "ing_10704035a8",
+            "normalized_name": "jam",
+            "display_name": "jam",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.7,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": true,
+            "notes": ""
+          },
+          {
+            "id": "ing_ef1a8d7a10",
+            "normalized_name": "cured ham",
+            "display_name": "cured ham",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.9,
             "confirmed": false,
             "opened": false,
             "cooked": false,
@@ -35,14 +188,33 @@
             "notes": ""
           },
           {
-            "id": "ing_0707ea9d9f",
-            "normalized_name": "rice",
-            "display_name": "rice",
+            "id": "ing_657a61953c",
+            "normalized_name": "sausage",
+            "display_name": "sausage",
             "quantity": null,
             "unit": null,
             "quantity_text": null,
-            "source": "typed",
-            "confidence": 1.0,
+            "source": "photo",
+            "confidence": 0.7,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": true,
+            "notes": ""
+          },
+          {
+            "id": "ing_4f978253f3",
+            "normalized_name": "cheese",
+            "display_name": "cheese",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.9,
             "confirmed": false,
             "opened": false,
             "cooked": false,
@@ -54,14 +226,14 @@
             "notes": ""
           },
           {
-            "id": "ing_7dda82c9c9",
-            "normalized_name": "tomato",
-            "display_name": "tomato",
+            "id": "ing_508eb233d5",
+            "normalized_name": "egg",
+            "display_name": "eggs",
             "quantity": null,
             "unit": null,
             "quantity_text": null,
-            "source": "typed",
-            "confidence": 1.0,
+            "source": "photo",
+            "confidence": 0.9,
             "confirmed": false,
             "opened": false,
             "cooked": false,
@@ -73,14 +245,52 @@
             "notes": ""
           },
           {
-            "id": "ing_84bb245cee",
-            "normalized_name": "garlic",
-            "display_name": "garlic",
+            "id": "ing_3c599cf75e",
+            "normalized_name": "feta cheese",
+            "display_name": "feta cheese",
             "quantity": null,
             "unit": null,
             "quantity_text": null,
-            "source": "typed",
-            "confidence": 1.0,
+            "source": "photo",
+            "confidence": 0.7,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": true,
+            "notes": ""
+          },
+          {
+            "id": "ing_f6acad2111",
+            "normalized_name": "wine",
+            "display_name": "wine",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.7,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": true,
+            "notes": ""
+          },
+          {
+            "id": "ing_94d2da46ca",
+            "normalized_name": "banana",
+            "display_name": "bananas",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.9,
             "confirmed": false,
             "opened": false,
             "cooked": false,
@@ -89,6 +299,158 @@
             "exclude_from_plan": false,
             "do_not_use": false,
             "needs_confirmation": false,
+            "notes": ""
+          },
+          {
+            "id": "ing_042650140d",
+            "normalized_name": "grapefruit",
+            "display_name": "grapefruit",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.9,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": false,
+            "notes": ""
+          },
+          {
+            "id": "ing_707a046b04",
+            "normalized_name": "tangerine",
+            "display_name": "tangerines",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.9,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": false,
+            "notes": ""
+          },
+          {
+            "id": "ing_40a51dfd51",
+            "normalized_name": "apple",
+            "display_name": "apple",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.9,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": false,
+            "notes": ""
+          },
+          {
+            "id": "ing_d2888a7e85",
+            "normalized_name": "kiwi",
+            "display_name": "kiwi",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.7,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": true,
+            "notes": ""
+          },
+          {
+            "id": "ing_7878a01a26",
+            "normalized_name": "lemon",
+            "display_name": "lemon",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.7,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": true,
+            "notes": ""
+          },
+          {
+            "id": "ing_ff60c473bc",
+            "normalized_name": "carrot",
+            "display_name": "carrots",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.7,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": true,
+            "notes": ""
+          },
+          {
+            "id": "ing_309c794d16",
+            "normalized_name": "potato",
+            "display_name": "potatoes",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.7,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": true,
+            "notes": ""
+          },
+          {
+            "id": "ing_82d054aba7",
+            "normalized_name": "onion",
+            "display_name": "onion",
+            "quantity": null,
+            "unit": null,
+            "quantity_text": null,
+            "source": "photo",
+            "confidence": 0.45,
+            "confirmed": false,
+            "opened": false,
+            "cooked": false,
+            "frozen": false,
+            "use_soon_user_flag": false,
+            "exclude_from_plan": false,
+            "do_not_use": false,
+            "needs_confirmation": true,
             "notes": ""
           }
         ]
@@ -96,339 +458,297 @@
     },
     {
       "role": "assistant",
-      "content": "Here's what I recommend using first:\n\n**Use first:**\n• spinach — leafy_green from shelf-life reference\n\n**Use soon:**\n• tomato — soft_produce from shelf-life reference\n\n**Longer-lasting:**\n• garlic — allium from shelf-life reference\n• rice — grain_cooked_or_dry from shelf-life reference\n\n_These are planning-priority estimates, not food-safety guarantees. Check smell, texture, storage history, and package dates before eating._\n\nShould I generate your meal plan now?",
+      "content": "I detected **cured ham**, **wine** — these conflict with your saved dietary profile. Should I:\n\n1. Keep them recorded but exclude them from your plan (e.g., they're for someone else)\n2. Remove them from the inventory (e.g., detected incorrectly)",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "user",
+      "content": "Exclude from plan",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "I'll keep **cured ham**, **wine** recorded but exclude them from your plan.",
+      "kind": "text",
+      "meta": {}
+    },
+    {
+      "role": "assistant",
+      "content": "Here's what I recommend using first:\n\n**Use soon:**\n• cheese — dairy_fresh from shelf-life reference\n• egg — eggs from shelf-life reference\n\n**Longer-lasting:**\n• pickled vegetable — not in shelf-life reference; default score 3\n• honey — not in shelf-life reference; default score 3\n• jam — not in shelf-life reference; default score 3\n• sausage — not in shelf-life reference; default score 3\n• banana — not in shelf-life reference; default score 3\n• grapefruit — not in shelf-life reference; default score 3\n• tangerine — not in shelf-life reference; default score 3\n• apple — firm_fruit from shelf-life reference\n• kiwi — not in shelf-life reference; default score 3\n• carrot — root_vegetable from shelf-life reference\n• potato — tuber from shelf-life reference\n• onion — allium from shelf-life reference\n• feta cheese — aged_cheese from shelf-life reference\n• lemon — citrus from shelf-life reference\n\n_These are planning-priority estimates, not food-safety guarantees. Check smell, texture, storage history, and package dates before eating._\n\nShould I generate your meal plan now?",
       "kind": "freshness",
       "meta": {
         "ranked": [
           {
-            "item": "spinach",
-            "score": 5,
-            "class": "leafy_green",
-            "reason": "leafy_green from shelf-life reference",
-            "in_reference": true,
-            "priority_label": "use_first",
-            "uncertain": false,
-            "ingredient_id": "ing_81ec12b915"
-          },
-          {
-            "item": "tomato",
+            "item": "cheese",
             "score": 4,
-            "class": "soft_produce",
-            "reason": "soft_produce from shelf-life reference",
+            "class": "dairy_fresh",
+            "reason": "dairy_fresh from shelf-life reference",
             "in_reference": true,
             "priority_label": "use_soon",
             "uncertain": false,
-            "ingredient_id": "ing_7dda82c9c9"
+            "ingredient_id": "ing_4f978253f3"
           },
           {
-            "item": "garlic",
+            "item": "egg",
+            "score": 4,
+            "class": "eggs",
+            "reason": "eggs from shelf-life reference",
+            "in_reference": true,
+            "priority_label": "use_soon",
+            "uncertain": false,
+            "ingredient_id": "ing_508eb233d5"
+          },
+          {
+            "item": "pickled vegetable",
+            "score": 3,
+            "class": "unknown",
+            "reason": "not in shelf-life reference; default score 3",
+            "in_reference": false,
+            "priority_label": "moderate",
+            "uncertain": true,
+            "ingredient_id": "ing_dba6cf820d"
+          },
+          {
+            "item": "honey",
+            "score": 3,
+            "class": "unknown",
+            "reason": "not in shelf-life reference; default score 3",
+            "in_reference": false,
+            "priority_label": "moderate",
+            "uncertain": true,
+            "ingredient_id": "ing_baa4a35c76"
+          },
+          {
+            "item": "jam",
+            "score": 3,
+            "class": "unknown",
+            "reason": "not in shelf-life reference; default score 3",
+            "in_reference": false,
+            "priority_label": "moderate",
+            "uncertain": true,
+            "ingredient_id": "ing_10704035a8"
+          },
+          {
+            "item": "sausage",
+            "score": 3,
+            "class": "unknown",
+            "reason": "not in shelf-life reference; default score 3",
+            "in_reference": false,
+            "priority_label": "moderate",
+            "uncertain": true,
+            "ingredient_id": "ing_657a61953c"
+          },
+          {
+            "item": "banana",
+            "score": 3,
+            "class": "unknown",
+            "reason": "not in shelf-life reference; default score 3",
+            "in_reference": false,
+            "priority_label": "moderate",
+            "uncertain": true,
+            "ingredient_id": "ing_94d2da46ca"
+          },
+          {
+            "item": "grapefruit",
+            "score": 3,
+            "class": "unknown",
+            "reason": "not in shelf-life reference; default score 3",
+            "in_reference": false,
+            "priority_label": "moderate",
+            "uncertain": true,
+            "ingredient_id": "ing_042650140d"
+          },
+          {
+            "item": "tangerine",
+            "score": 3,
+            "class": "unknown",
+            "reason": "not in shelf-life reference; default score 3",
+            "in_reference": false,
+            "priority_label": "moderate",
+            "uncertain": true,
+            "ingredient_id": "ing_707a046b04"
+          },
+          {
+            "item": "apple",
+            "score": 3,
+            "class": "firm_fruit",
+            "reason": "firm_fruit from shelf-life reference",
+            "in_reference": true,
+            "priority_label": "moderate",
+            "uncertain": false,
+            "ingredient_id": "ing_40a51dfd51"
+          },
+          {
+            "item": "kiwi",
+            "score": 3,
+            "class": "unknown",
+            "reason": "not in shelf-life reference; default score 3",
+            "in_reference": false,
+            "priority_label": "moderate",
+            "uncertain": true,
+            "ingredient_id": "ing_d2888a7e85"
+          },
+          {
+            "item": "carrot",
+            "score": 3,
+            "class": "root_vegetable",
+            "reason": "root_vegetable from shelf-life reference",
+            "in_reference": true,
+            "priority_label": "moderate",
+            "uncertain": false,
+            "ingredient_id": "ing_ff60c473bc"
+          },
+          {
+            "item": "potato",
+            "score": 3,
+            "class": "tuber",
+            "reason": "tuber from shelf-life reference",
+            "in_reference": true,
+            "priority_label": "moderate",
+            "uncertain": false,
+            "ingredient_id": "ing_309c794d16"
+          },
+          {
+            "item": "onion",
             "score": 3,
             "class": "allium",
             "reason": "allium from shelf-life reference",
             "in_reference": true,
             "priority_label": "moderate",
             "uncertain": false,
-            "ingredient_id": "ing_84bb245cee"
+            "ingredient_id": "ing_82d054aba7"
           },
           {
-            "item": "rice",
-            "score": 1,
-            "class": "grain_cooked_or_dry",
-            "reason": "grain_cooked_or_dry from shelf-life reference",
+            "item": "feta cheese",
+            "score": 2,
+            "class": "aged_cheese",
+            "reason": "aged_cheese from shelf-life reference",
             "in_reference": true,
-            "priority_label": "shelf_stable",
+            "priority_label": "longer",
             "uncertain": false,
-            "ingredient_id": "ing_0707ea9d9f"
+            "ingredient_id": "ing_3c599cf75e"
+          },
+          {
+            "item": "lemon",
+            "score": 2,
+            "class": "citrus",
+            "reason": "citrus from shelf-life reference",
+            "in_reference": true,
+            "priority_label": "longer",
+            "uncertain": false,
+            "ingredient_id": "ing_7878a01a26"
           }
         ]
-      }
-    },
-    {
-      "role": "assistant",
-      "content": "Here’s a draft plan based on your confirmed inventory and profile.\n\nHow does this plan look? You can accept it, replace one meal, change the number of days, request a different cuisine, or tell me what you don’t like.",
-      "kind": "meal_cards",
-      "meta": {
-        "plan": {
-          "plan_id": "plan_f64d07867c",
-          "plan": [
-            {
-              "night": 1,
-              "day": 1,
-              "meal_type": "dinner",
-              "recipe": "Paneer Spinach Skillet",
-              "recipe_id": null,
-              "time_min": 25,
-              "servings": 2,
-              "uses_critical": [
-                "spinach",
-                "tomato"
-              ],
-              "ingredients_from_inventory": [
-                "spinach",
-                "tomato"
-              ],
-              "extra_pantry_items": [],
-              "steps": [
-                "Saute onion and tomato",
-                "Add spices",
-                "Fold in paneer and spinach"
-              ],
-              "missing_ingredients": [
-                "paneer",
-                "onion",
-                "cumin"
-              ],
-              "why_selected": "Uses spinach, tomato first.",
-              "status": "proposed",
-              "diet_validation_passed": true,
-              "detailed_recipe": null
-            },
-            {
-              "night": 2,
-              "day": 2,
-              "meal_type": "dinner",
-              "recipe": "Spinach Lemon Rice Bowl",
-              "recipe_id": null,
-              "time_min": 20,
-              "servings": 2,
-              "uses_critical": [
-                "spinach"
-              ],
-              "ingredients_from_inventory": [
-                "spinach",
-                "rice",
-                "garlic"
-              ],
-              "extra_pantry_items": [],
-              "steps": [
-                "Saute garlic in oil",
-                "Wilt spinach",
-                "Toss with rice and lemon"
-              ],
-              "missing_ingredients": [
-                "lemon"
-              ],
-              "why_selected": "Uses spinach first.",
-              "status": "proposed",
-              "diet_validation_passed": true,
-              "detailed_recipe": null
-            },
-            {
-              "night": 3,
-              "day": 3,
-              "meal_type": "dinner",
-              "recipe": "Tofu Stir Fry with Greens",
-              "recipe_id": null,
-              "time_min": 25,
-              "servings": 2,
-              "uses_critical": [
-                "spinach"
-              ],
-              "ingredients_from_inventory": [
-                "spinach",
-                "garlic",
-                "rice"
-              ],
-              "extra_pantry_items": [],
-              "steps": [
-                "Brown tofu",
-                "Add greens",
-                "Finish with soy and serve over rice"
-              ],
-              "missing_ingredients": [
-                "tofu",
-                "soy sauce"
-              ],
-              "why_selected": "Uses spinach first.",
-              "status": "proposed",
-              "diet_validation_passed": true,
-              "detailed_recipe": null
-            }
-          ],
-          "flagged_for_other_use": [],
-          "clarification": null,
-          "confirmed": false,
-          "unresolved_gaps": []
-        },
-        "pipeline_steps": [
-          {
-            "key": "inventory",
-            "label": "Reading your confirmed inventory",
-            "detail": "4 ingredients: spinach, rice, tomato, garlic"
-          },
-          {
-            "key": "profile",
-            "label": "Loading dietary profile (long-term memory)",
-            "detail": "vegetarian · halal · allergies: egg · 2 serving(s) · 3 day(s)"
-          },
-          {
-            "key": "memory",
-            "label": "Refreshing short-term conversation memory",
-            "detail": "User is setting up a meal plan with FoodPlanner.AI. Detected inventory includes: spinach (use first, leafy_green), tomato (use soon, soft_produce), garlic and r"
-          },
-          {
-            "key": "pipeline_start",
-            "label": "Starting plan pipeline (offline deterministic planner)",
-            "detail": "freshness → critical → retrieve → plan → gaps"
-          },
-          {
-            "key": "stage_freshness",
-            "label": "Scoring freshness from the shelf-life knowledge base",
-            "detail": "Ranked 4 items · top: spinach, tomato, garlic, rice"
-          },
-          {
-            "key": "stage_critical",
-            "label": "Picking use-first / at-risk ingredients",
-            "detail": "2 use-first: spinach, tomato"
-          },
-          {
-            "key": "stage_retrieve",
-            "label": "Searching diet-safe recipes",
-            "detail": "5 verified candidates · source: fixture"
-          },
-          {
-            "key": "stage_plan",
-            "label": "Building your multi-day meal plan",
-            "detail": "offline planner · 3 meal(s) · Paneer Spinach Skillet, Spinach Lemon Rice Bowl, Tofu Stir Fry with Greens"
-          },
-          {
-            "key": "stage_gap",
-            "label": "Computing the gap-only shopping list",
-            "detail": "4 missing item(s) for the shopping list"
-          },
-          {
-            "key": "finalize",
-            "label": "Finalizing meal cards",
-            "detail": "Paneer Spinach Skillet, Spinach Lemon Rice Bowl, Tofu Stir Fry with Greens"
-          }
-        ]
-      }
-    },
-    {
-      "role": "user",
-      "content": "Replace day 1",
-      "kind": "text",
-      "meta": {}
-    },
-    {
-      "role": "assistant",
-      "content": "Understood. I kept the other days unchanged and updated Day 1 to **Tomato Lentil Dal**.",
-      "kind": "meal_cards",
-      "meta": {
-        "plan": {
-          "plan_id": "plan_f64d07867c",
-          "plan": [
-            {
-              "night": 1,
-              "day": 1,
-              "meal_type": "dinner",
-              "recipe": "Tomato Lentil Dal",
-              "recipe_id": "1006",
-              "time_min": 30,
-              "servings": 2,
-              "uses_critical": [
-                "tomato"
-              ],
-              "ingredients_from_inventory": [
-                "tomato"
-              ],
-              "extra_pantry_items": [],
-              "steps": [
-                "Cook lentils",
-                "Temper spices",
-                "Finish with tomato and lemon"
-              ],
-              "missing_ingredients": [
-                "lentils",
-                "cumin",
-                "turmeric",
-                "lemon"
-              ],
-              "why_selected": "Replacement for Day 1 based on your feedback.",
-              "status": "replaced",
-              "diet_validation_passed": true,
-              "detailed_recipe": null
-            },
-            {
-              "night": 2,
-              "day": 2,
-              "meal_type": "dinner",
-              "recipe": "Spinach Lemon Rice Bowl",
-              "recipe_id": null,
-              "time_min": 20,
-              "servings": 2,
-              "uses_critical": [
-                "spinach"
-              ],
-              "ingredients_from_inventory": [
-                "spinach",
-                "rice",
-                "garlic"
-              ],
-              "extra_pantry_items": [],
-              "steps": [
-                "Saute garlic in oil",
-                "Wilt spinach",
-                "Toss with rice and lemon"
-              ],
-              "missing_ingredients": [
-                "lemon"
-              ],
-              "why_selected": "Uses spinach first.",
-              "status": "proposed",
-              "diet_validation_passed": true,
-              "detailed_recipe": null
-            },
-            {
-              "night": 3,
-              "day": 3,
-              "meal_type": "dinner",
-              "recipe": "Tofu Stir Fry with Greens",
-              "recipe_id": null,
-              "time_min": 25,
-              "servings": 2,
-              "uses_critical": [
-                "spinach"
-              ],
-              "ingredients_from_inventory": [
-                "spinach",
-                "garlic",
-                "rice"
-              ],
-              "extra_pantry_items": [],
-              "steps": [
-                "Brown tofu",
-                "Add greens",
-                "Finish with soy and serve over rice"
-              ],
-              "missing_ingredients": [
-                "tofu",
-                "soy sauce"
-              ],
-              "why_selected": "Uses spinach first.",
-              "status": "proposed",
-              "diet_validation_passed": true,
-              "detailed_recipe": null
-            }
-          ],
-          "flagged_for_other_use": [],
-          "clarification": null,
-          "confirmed": false,
-          "unresolved_gaps": []
-        }
       }
     }
   ],
   "inventory": [
     {
-      "id": "ing_81ec12b915",
-      "normalized_name": "spinach",
-      "display_name": "spinach",
+      "id": "ing_dba6cf820d",
+      "normalized_name": "pickled vegetables",
+      "display_name": "pickled vegetables",
       "quantity": null,
       "unit": null,
       "quantity_text": null,
-      "source": "typed",
-      "confidence": 1.0,
+      "source": "photo",
+      "confidence": 0.7,
+      "confirmed": true,
+      "opened": false,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": true,
+      "notes": ""
+    },
+    {
+      "id": "ing_baa4a35c76",
+      "normalized_name": "honey",
+      "display_name": "honey",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.45,
+      "confirmed": true,
+      "opened": false,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": true,
+      "notes": ""
+    },
+    {
+      "id": "ing_10704035a8",
+      "normalized_name": "jam",
+      "display_name": "jam",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.7,
+      "confirmed": true,
+      "opened": false,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": true,
+      "notes": ""
+    },
+    {
+      "id": "ing_ef1a8d7a10",
+      "normalized_name": "cured ham",
+      "display_name": "cured ham",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.9,
+      "confirmed": true,
+      "opened": false,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": true,
+      "do_not_use": true,
+      "needs_confirmation": false,
+      "notes": ""
+    },
+    {
+      "id": "ing_657a61953c",
+      "normalized_name": "sausage",
+      "display_name": "sausage",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.7,
+      "confirmed": true,
+      "opened": false,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": true,
+      "notes": ""
+    },
+    {
+      "id": "ing_4f978253f3",
+      "normalized_name": "cheese",
+      "display_name": "cheese",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.9,
       "confirmed": true,
       "opened": false,
       "cooked": false,
@@ -440,14 +760,14 @@
       "notes": ""
     },
     {
-      "id": "ing_0707ea9d9f",
-      "normalized_name": "rice",
-      "display_name": "rice",
+      "id": "ing_508eb233d5",
+      "normalized_name": "eggs",
+      "display_name": "eggs",
       "quantity": null,
       "unit": null,
       "quantity_text": null,
-      "source": "typed",
-      "confidence": 1.0,
+      "source": "photo",
+      "confidence": 0.9,
       "confirmed": true,
       "opened": false,
       "cooked": false,
@@ -459,14 +779,52 @@
       "notes": ""
     },
     {
-      "id": "ing_7dda82c9c9",
-      "normalized_name": "tomato",
-      "display_name": "tomato",
+      "id": "ing_3c599cf75e",
+      "normalized_name": "feta cheese",
+      "display_name": "feta cheese",
       "quantity": null,
       "unit": null,
       "quantity_text": null,
-      "source": "typed",
-      "confidence": 1.0,
+      "source": "photo",
+      "confidence": 0.7,
+      "confirmed": true,
+      "opened": false,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": true,
+      "notes": ""
+    },
+    {
+      "id": "ing_f6acad2111",
+      "normalized_name": "wine",
+      "display_name": "wine",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.7,
+      "confirmed": true,
+      "opened": false,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": true,
+      "do_not_use": true,
+      "needs_confirmation": true,
+      "notes": ""
+    },
+    {
+      "id": "ing_94d2da46ca",
+      "normalized_name": "bananas",
+      "display_name": "bananas",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.9,
       "confirmed": true,
       "opened": false,
       "cooked": false,
@@ -478,14 +836,14 @@
       "notes": ""
     },
     {
-      "id": "ing_84bb245cee",
-      "normalized_name": "garlic",
-      "display_name": "garlic",
+      "id": "ing_042650140d",
+      "normalized_name": "grapefruit",
+      "display_name": "grapefruit",
       "quantity": null,
       "unit": null,
       "quantity_text": null,
-      "source": "typed",
-      "confidence": 1.0,
+      "source": "photo",
+      "confidence": 0.9,
       "confirmed": true,
       "opened": false,
       "cooked": false,
@@ -494,265 +852,315 @@
       "exclude_from_plan": false,
       "do_not_use": false,
       "needs_confirmation": false,
+      "notes": ""
+    },
+    {
+      "id": "ing_707a046b04",
+      "normalized_name": "tangerines",
+      "display_name": "tangerines",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.9,
+      "confirmed": true,
+      "opened": false,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": false,
+      "notes": ""
+    },
+    {
+      "id": "ing_40a51dfd51",
+      "normalized_name": "apple",
+      "display_name": "apple",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.9,
+      "confirmed": true,
+      "opened": false,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": false,
+      "notes": ""
+    },
+    {
+      "id": "ing_d2888a7e85",
+      "normalized_name": "kiwi",
+      "display_name": "kiwi",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.7,
+      "confirmed": true,
+      "opened": false,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": true,
+      "notes": ""
+    },
+    {
+      "id": "ing_7878a01a26",
+      "normalized_name": "lemon",
+      "display_name": "lemon",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.7,
+      "confirmed": true,
+      "opened": false,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": true,
+      "notes": ""
+    },
+    {
+      "id": "ing_ff60c473bc",
+      "normalized_name": "carrots",
+      "display_name": "carrots",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.7,
+      "confirmed": true,
+      "opened": false,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": true,
+      "notes": ""
+    },
+    {
+      "id": "ing_309c794d16",
+      "normalized_name": "potatoes",
+      "display_name": "potatoes",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.7,
+      "confirmed": true,
+      "opened": false,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": true,
+      "notes": ""
+    },
+    {
+      "id": "ing_82d054aba7",
+      "normalized_name": "onion",
+      "display_name": "onion",
+      "quantity": null,
+      "unit": null,
+      "quantity_text": null,
+      "source": "photo",
+      "confidence": 0.45,
+      "confirmed": true,
+      "opened": false,
+      "cooked": false,
+      "frozen": false,
+      "use_soon_user_flag": false,
+      "exclude_from_plan": false,
+      "do_not_use": false,
+      "needs_confirmation": true,
       "notes": ""
     }
   ],
   "pending_conflicts": [],
   "ranked": [
     {
-      "item": "spinach",
-      "score": 5,
-      "class_name": "leafy_green",
-      "reason": "leafy_green from shelf-life reference",
-      "in_reference": true,
-      "priority_label": "use_first",
-      "uncertain": false,
-      "ingredient_id": null
-    },
-    {
-      "item": "tomato",
+      "item": "cheese",
       "score": 4,
-      "class_name": "soft_produce",
-      "reason": "soft_produce from shelf-life reference",
+      "class_name": "dairy_fresh",
+      "reason": "dairy_fresh from shelf-life reference",
       "in_reference": true,
       "priority_label": "use_soon",
       "uncertain": false,
-      "ingredient_id": null
+      "ingredient_id": "ing_4f978253f3"
     },
     {
-      "item": "garlic",
+      "item": "egg",
+      "score": 4,
+      "class_name": "eggs",
+      "reason": "eggs from shelf-life reference",
+      "in_reference": true,
+      "priority_label": "use_soon",
+      "uncertain": false,
+      "ingredient_id": "ing_508eb233d5"
+    },
+    {
+      "item": "pickled vegetable",
+      "score": 3,
+      "class_name": "unknown",
+      "reason": "not in shelf-life reference; default score 3",
+      "in_reference": false,
+      "priority_label": "moderate",
+      "uncertain": true,
+      "ingredient_id": "ing_dba6cf820d"
+    },
+    {
+      "item": "honey",
+      "score": 3,
+      "class_name": "unknown",
+      "reason": "not in shelf-life reference; default score 3",
+      "in_reference": false,
+      "priority_label": "moderate",
+      "uncertain": true,
+      "ingredient_id": "ing_baa4a35c76"
+    },
+    {
+      "item": "jam",
+      "score": 3,
+      "class_name": "unknown",
+      "reason": "not in shelf-life reference; default score 3",
+      "in_reference": false,
+      "priority_label": "moderate",
+      "uncertain": true,
+      "ingredient_id": "ing_10704035a8"
+    },
+    {
+      "item": "sausage",
+      "score": 3,
+      "class_name": "unknown",
+      "reason": "not in shelf-life reference; default score 3",
+      "in_reference": false,
+      "priority_label": "moderate",
+      "uncertain": true,
+      "ingredient_id": "ing_657a61953c"
+    },
+    {
+      "item": "banana",
+      "score": 3,
+      "class_name": "unknown",
+      "reason": "not in shelf-life reference; default score 3",
+      "in_reference": false,
+      "priority_label": "moderate",
+      "uncertain": true,
+      "ingredient_id": "ing_94d2da46ca"
+    },
+    {
+      "item": "grapefruit",
+      "score": 3,
+      "class_name": "unknown",
+      "reason": "not in shelf-life reference; default score 3",
+      "in_reference": false,
+      "priority_label": "moderate",
+      "uncertain": true,
+      "ingredient_id": "ing_042650140d"
+    },
+    {
+      "item": "tangerine",
+      "score": 3,
+      "class_name": "unknown",
+      "reason": "not in shelf-life reference; default score 3",
+      "in_reference": false,
+      "priority_label": "moderate",
+      "uncertain": true,
+      "ingredient_id": "ing_707a046b04"
+    },
+    {
+      "item": "apple",
+      "score": 3,
+      "class_name": "firm_fruit",
+      "reason": "firm_fruit from shelf-life reference",
+      "in_reference": true,
+      "priority_label": "moderate",
+      "uncertain": false,
+      "ingredient_id": "ing_40a51dfd51"
+    },
+    {
+      "item": "kiwi",
+      "score": 3,
+      "class_name": "unknown",
+      "reason": "not in shelf-life reference; default score 3",
+      "in_reference": false,
+      "priority_label": "moderate",
+      "uncertain": true,
+      "ingredient_id": "ing_d2888a7e85"
+    },
+    {
+      "item": "carrot",
+      "score": 3,
+      "class_name": "root_vegetable",
+      "reason": "root_vegetable from shelf-life reference",
+      "in_reference": true,
+      "priority_label": "moderate",
+      "uncertain": false,
+      "ingredient_id": "ing_ff60c473bc"
+    },
+    {
+      "item": "potato",
+      "score": 3,
+      "class_name": "tuber",
+      "reason": "tuber from shelf-life reference",
+      "in_reference": true,
+      "priority_label": "moderate",
+      "uncertain": false,
+      "ingredient_id": "ing_309c794d16"
+    },
+    {
+      "item": "onion",
       "score": 3,
       "class_name": "allium",
       "reason": "allium from shelf-life reference",
       "in_reference": true,
       "priority_label": "moderate",
       "uncertain": false,
-      "ingredient_id": null
+      "ingredient_id": "ing_82d054aba7"
     },
     {
-      "item": "rice",
-      "score": 1,
-      "class_name": "grain_cooked_or_dry",
-      "reason": "grain_cooked_or_dry from shelf-life reference",
+      "item": "feta cheese",
+      "score": 2,
+      "class_name": "aged_cheese",
+      "reason": "aged_cheese from shelf-life reference",
       "in_reference": true,
-      "priority_label": "shelf_stable",
+      "priority_label": "longer",
       "uncertain": false,
-      "ingredient_id": null
+      "ingredient_id": "ing_3c599cf75e"
+    },
+    {
+      "item": "lemon",
+      "score": 2,
+      "class_name": "citrus",
+      "reason": "citrus from shelf-life reference",
+      "in_reference": true,
+      "priority_label": "longer",
+      "uncertain": false,
+      "ingredient_id": "ing_7878a01a26"
     }
   ],
   "critical_priority": [
-    "spinach",
-    "tomato"
+    "cheese",
+    "egg"
   ],
-  "recipe_candidates": [
-    {
-      "id": 1001,
-      "title": "Spinach Lemon Rice Bowl",
-      "ingredients": [
-        "spinach",
-        "rice",
-        "lemon",
-        "garlic",
-        "oil",
-        "salt"
-      ],
-      "ready_in_minutes": 20,
-      "steps": [
-        "Saute garlic in oil",
-        "Wilt spinach",
-        "Toss with rice and lemon"
-      ],
-      "source": "fixture",
-      "cuisine": null
-    },
-    {
-      "id": 1002,
-      "title": "Paneer Spinach Skillet",
-      "ingredients": [
-        "paneer",
-        "spinach",
-        "onion",
-        "tomato",
-        "cumin",
-        "oil",
-        "salt"
-      ],
-      "ready_in_minutes": 25,
-      "steps": [
-        "Saute onion and tomato",
-        "Add spices",
-        "Fold in paneer and spinach"
-      ],
-      "source": "fixture",
-      "cuisine": null
-    },
-    {
-      "id": 1003,
-      "title": "Lemon Herb Chickpea Salad",
-      "ingredients": [
-        "chickpeas",
-        "lemon",
-        "cucumber",
-        "olive oil",
-        "salt",
-        "pepper"
-      ],
-      "ready_in_minutes": 15,
-      "steps": [
-        "Drain chickpeas",
-        "Toss with lemon and oil",
-        "Season and serve"
-      ],
-      "source": "fixture",
-      "cuisine": null
-    },
-    {
-      "id": 1004,
-      "title": "Tofu Stir Fry with Greens",
-      "ingredients": [
-        "tofu",
-        "spinach",
-        "soy sauce",
-        "garlic",
-        "oil",
-        "rice"
-      ],
-      "ready_in_minutes": 25,
-      "steps": [
-        "Brown tofu",
-        "Add greens",
-        "Finish with soy and serve over rice"
-      ],
-      "source": "fixture",
-      "cuisine": null
-    },
-    {
-      "id": 1006,
-      "title": "Tomato Lentil Dal",
-      "ingredients": [
-        "lentils",
-        "tomato",
-        "cumin",
-        "turmeric",
-        "oil",
-        "salt",
-        "lemon"
-      ],
-      "ready_in_minutes": 30,
-      "steps": [
-        "Cook lentils",
-        "Temper spices",
-        "Finish with tomato and lemon"
-      ],
-      "source": "fixture",
-      "cuisine": null
-    }
-  ],
-  "plan": {
-    "plan_id": "plan_f64d07867c",
-    "plan": [
-      {
-        "night": 1,
-        "day": 1,
-        "meal_type": "dinner",
-        "recipe": "Tomato Lentil Dal",
-        "recipe_id": "1006",
-        "time_min": 30,
-        "servings": 2,
-        "uses_critical": [
-          "tomato"
-        ],
-        "ingredients_from_inventory": [
-          "tomato"
-        ],
-        "extra_pantry_items": [],
-        "steps": [
-          "Cook lentils",
-          "Temper spices",
-          "Finish with tomato and lemon"
-        ],
-        "missing_ingredients": [
-          "lentils",
-          "cumin",
-          "turmeric",
-          "lemon"
-        ],
-        "why_selected": "Replacement for Day 1 based on your feedback.",
-        "status": "replaced",
-        "diet_validation_passed": true,
-        "detailed_recipe": null
-      },
-      {
-        "night": 2,
-        "day": 2,
-        "meal_type": "dinner",
-        "recipe": "Spinach Lemon Rice Bowl",
-        "recipe_id": null,
-        "time_min": 20,
-        "servings": 2,
-        "uses_critical": [
-          "spinach"
-        ],
-        "ingredients_from_inventory": [
-          "spinach",
-          "rice",
-          "garlic"
-        ],
-        "extra_pantry_items": [],
-        "steps": [
-          "Saute garlic in oil",
-          "Wilt spinach",
-          "Toss with rice and lemon"
-        ],
-        "missing_ingredients": [
-          "lemon"
-        ],
-        "why_selected": "Uses spinach first.",
-        "status": "proposed",
-        "diet_validation_passed": true,
-        "detailed_recipe": null
-      },
-      {
-        "night": 3,
-        "day": 3,
-        "meal_type": "dinner",
-        "recipe": "Tofu Stir Fry with Greens",
-        "recipe_id": null,
-        "time_min": 25,
-        "servings": 2,
-        "uses_critical": [
-          "spinach"
-        ],
-        "ingredients_from_inventory": [
-          "spinach",
-          "garlic",
-          "rice"
-        ],
-        "extra_pantry_items": [],
-        "steps": [
-          "Brown tofu",
-          "Add greens",
-          "Finish with soy and serve over rice"
-        ],
-        "missing_ingredients": [
-          "tofu",
-          "soy sauce"
-        ],
-        "why_selected": "Uses spinach first.",
-        "status": "proposed",
-        "diet_validation_passed": true,
-        "detailed_recipe": null
-      }
-    ],
-    "flagged_for_other_use": [],
-    "clarification": null,
-    "confirmed": false,
-    "unresolved_gaps": []
-  },
+  "recipe_candidates": [],
+  "plan": null,
   "substitution": null,
   "gap_list": null,
   "preferences": {
-    "days": 3,
+    "days": 1,
     "meal_types": [
       "dinner"
     ],
@@ -763,20 +1171,18 @@
     "leftovers": []
   },
   "purchased_or_made": [],
-  "awaiting": "plan_feedback",
+  "awaiting": "generate_plan",
   "quick_replies": [
-    "Accept plan",
-    "Replace another meal",
-    "Help with missing ingredients"
+    "Yes, generate plan",
+    "Adjust priorities",
+    "Edit inventory"
   ],
-  "use_llm": false,
+  "use_llm": true,
   "demo_mode": false,
-  "conversation_summary": "User is setting up a meal plan with FoodPlanner.AI. Detected inventory includes: spinach (use first, leafy_green), tomato (use soon, soft_produce), garlic and rice (longer-lasting). No corrections or dietary preferences stated yet. Still need to confirm number of days/meals to plan and verify detected item list accuracy with user before finalizing plan.",
-  "summarized_through": 3,
+  "conversation_summary": "",
+  "summarized_through": 0,
   "last_image_hash": null,
-  "last_snapshot_id": "snap_c85ec18e5b",
+  "last_snapshot_id": "snap_2f8c8d4261",
   "pending_outcomes": [],
-  "rejected_recipes": [
-    "Paneer Spinach Skillet"
-  ]
+  "rejected_recipes": []
 }

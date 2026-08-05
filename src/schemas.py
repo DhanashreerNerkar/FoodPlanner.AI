@@ -101,13 +101,20 @@ class UserProfile(BaseModel):
     profile_confirmed: bool = False
 
     def sync_aliases(self) -> "UserProfile":
-        """Keep legacy field names in sync for diet_filter / planning."""
-        if self.cultural_rules and not self.cultural_constraints:
+        """Keep legacy field names in sync for diet_filter / planning.
+
+        ``allergies`` + cultural rules are the source of truth.
+        ``hard_exclusions`` / ``dietary_restrictions`` are derived outputs and
+        must be recomputed each time — never unioned with their previous values,
+        or cleared allergies (e.g. Eggs → None) would stick forever.
+        """
+        if self.cultural_rules:
             self.cultural_constraints = list(self.cultural_rules)
-        elif self.cultural_constraints and not self.cultural_rules:
+        elif self.cultural_constraints:
             self.cultural_rules = list(self.cultural_constraints)
 
-        hard = set(self.hard_exclusions) | set(self.allergies) | set(self.dietary_restrictions)
+        # Recompute from allergies only — do not reuse stale hard/dietary lists.
+        hard = {x for x in self.allergies if x and str(x).strip().lower() not in {"none", "no"}}
         # Map diet type into hard exclusions + ambient rules
         diet = self.diet_type
         if diet in {"vegetarian", "eggetarian"}:
@@ -119,17 +126,21 @@ class UserProfile(BaseModel):
         else:
             self.diet_style = "none"
 
-        rules = set(self.ambient_rules)
-        cultural = {c.lower() for c in self.cultural_rules}
-        if "jain" in cultural or any("jain" in c.lower() for c in self.cultural_rules):
+        # Recompute ambient rules from cultural constraints (avoid sticky leftovers).
+        rules: set[str] = set()
+        cultural_l = [c.lower() for c in self.cultural_rules]
+        cultural = set(cultural_l)
+        if "jain" in cultural or any("jain" in c for c in cultural_l):
             for r in self.jain_rules or ["no onion and garlic", "no root vegetables"]:
                 rules.add(r)
-                hard.add(r)
             hard.update(["onion", "garlic", "potato", "carrot", "beet", "radish"])
             rules.update(["no onion", "no garlic", "no root vegetables"])
-        if "no beef" in cultural:
+        # Hindu preference (common): avoid beef. Never implies an egg ban —
+        # eggs follow diet_type (vegetarian/vegan/jain) or an explicit allergy.
+        if any("hindu" in c for c in cultural_l) or "no beef" in cultural:
             hard.add("beef")
-        if "no pork" in cultural:
+            rules.add("no beef")
+        if "no pork" in cultural or any("halal" in c for c in cultural_l):
             hard.update(["pork", "bacon", "ham"])
         if "no onion or garlic" in cultural:
             hard.update(["onion", "garlic"])

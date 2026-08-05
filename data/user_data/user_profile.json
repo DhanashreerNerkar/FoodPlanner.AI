@@ -1,30 +1,38 @@
 {
-  "user_id": "user_60c7a3458c",
-  "diet_type": "vegetarian",
-  "diet_style": "strict-vegetarian",
+  "user_id": "user_1dff8214f2",
+  "diet_type": "non-vegetarian",
+  "diet_style": "none",
   "cultural_rules": [
-    "Halal"
+    "Halal",
+    "Hindu dietary preference"
   ],
   "cultural_constraints": [
-    "Halal"
+    "Halal",
+    "Hindu dietary preference"
   ],
   "jain_rules": [],
-  "allergies": [
-    "egg"
-  ],
+  "allergies": [],
   "hard_exclusions": [
-    "egg"
+    "bacon",
+    "beef",
+    "ham",
+    "pork"
   ],
   "dietary_restrictions": [
-    "egg"
+    "bacon",
+    "beef",
+    "ham",
+    "pork"
   ],
   "dislikes": [],
-  "ambient_rules": [],
-  "servings": 2,
+  "ambient_rules": [
+    "no beef"
+  ],
+  "servings": 1,
   "household_includes_children": false,
-  "cooking_time_preference": "30_45",
-  "time_limit_min": 45,
-  "nights": 3,
+  "cooking_time_preference": "under_15",
+  "time_limit_min": 15,
+  "nights": 1,
   "cooking_skill": "beginner",
   "equipment": [
     "stovetop"

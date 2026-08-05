@@ -70,7 +70,13 @@ def banned_ingredients_for_profile(profile: UserProfile) -> Set[str]:
     banned.update(normalize_name(x) for x in profile.hard_exclusions)
     banned.update(normalize_name(x) for x in profile.allergies)
     banned.update(normalize_name(x) for x in profile.dislikes)
-    banned.update(normalize_name(x) for x in profile.ambient_rules)
+    # Ambient rules are human-readable phrases ("no onion"); concrete banned
+    # ingredients are already expanded into hard_exclusions by sync_aliases.
+    for x in profile.ambient_rules:
+        n = normalize_name(x)
+        if n.startswith("no "):
+            continue
+        banned.add(n)
 
     for allergy in profile.allergies:
         key = normalize_name(allergy)
@@ -79,7 +85,8 @@ def banned_ingredients_for_profile(profile: UserProfile) -> Set[str]:
                 banned.update(words)
 
     diet = profile.diet_type
-    cultural = {normalize_name(c) for c in (profile.cultural_rules or profile.cultural_constraints)}
+    cultural_l = [normalize_name(c) for c in (profile.cultural_rules or profile.cultural_constraints)]
+    cultural = set(cultural_l)
 
     if diet in {"vegetarian", "vegan", "eggetarian"}:
         banned.update(MEAT_KEYWORDS)
@@ -103,20 +110,32 @@ def banned_ingredients_for_profile(profile: UserProfile) -> Set[str]:
         banned.update(MEAT_KEYWORDS - {"anchovy", "anchovies"})
         banned.update({"pork", "bacon", "ham", "lard", "gelatin", "gelatine", "chicken", "beef", "turkey"})
 
-    if "jain" in cultural or any("jain" in c for c in cultural):
+    if "jain" in cultural or any("jain" in c for c in cultural_l):
         banned.update(JAIN_BANNED)
         banned.update(MEAT_KEYWORDS)
         banned.update(SEAFOOD_KEYWORDS)
         banned.update(EGG_KEYWORDS)
         banned.update(HIDDEN_NONVEG)
-    if "halal" in cultural:
+    if any("halal" in c for c in cultural_l):
         banned.update({"pork", "bacon", "ham", "lard", "alcohol", "wine", "beer"})
-    if "kosher" in cultural:
+    if any("kosher" in c for c in cultural_l):
         banned.update({"pork", "bacon", "ham", "shellfish", "shrimp", "crab", "lobster"})
-    if any("no beef" in c for c in cultural):
+    # Hindu dietary preference ⇒ no beef. Eggs stay allowed for non-veg /
+    # eggetarian / flexitarian unless the user also picked vegetarian/vegan/jain
+    # or listed egg as an allergy.
+    if any("hindu" in c for c in cultural_l) or any("no beef" in c for c in cultural_l):
         banned.add("beef")
-    if any("no pork" in c for c in cultural):
+        banned.update({"beef stock", "beef broth"})
+    if any("no pork" in c for c in cultural_l):
         banned.update({"pork", "bacon", "ham"})
+
+    # Never keep diet-type labels themselves in the banned ingredient set —
+    # substring checks would turn "eggetarian" into an egg ban.
+    banned -= {
+        "vegetarian", "non-vegetarian", "non vegetarian", "vegan",
+        "eggetarian", "pescatarian", "flexitarian", "hindu",
+        "hindu dietary preference", "halal", "kosher", "jain",
+    }
 
     return {b for b in banned if b and b != "none"}
 
@@ -127,16 +146,27 @@ def ambient_rules_from_profile(profile: UserProfile) -> list:
 
 
 def ingredient_violates(ingredient: str, banned: set) -> bool:
+    """Return True if ``ingredient`` matches a banned term.
+
+    Uses word-boundary style matching so short stems like ``egg`` do not
+    false-positive inside labels such as ``eggetarian``.
+    """
     text = _tokens(ingredient)
-    for b in banned:
+    if not text:
+        return False
+    padded = f" {text} "
+    for raw in banned:
+        if not raw or raw == "none":
+            continue
+        b = _tokens(raw)
         if not b or b == "none":
             continue
-        # Prefer whole-token / phrase match to avoid butter⊂buttermilk style errors for short stems
-        if len(b) <= 3:
-            if text == b or f" {b} " in f" {text} ":
-                return True
-            continue
-        if b in text or text in b:
+        if text == b:
+            return True
+        if f" {b} " in padded:
+            return True
+        # Multi-word ban phrases (e.g. "fish sauce") may appear inside a longer blob.
+        if " " in b and b in text:
             return True
     return False
 

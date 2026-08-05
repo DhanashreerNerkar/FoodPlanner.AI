@@ -263,7 +263,12 @@ def _handle_profile(session: SessionState, profile: UserProfile, text: str) -> T
         return session, profile
 
     if step == "allergies":
+        # Allergies are the source of truth; sync_aliases rebuilds hard_exclusions /
+        # dietary_restrictions so a previously saved "Eggs" ban cannot stick after "None".
         profile.allergies = [] if t in {"none", "no"} else _parse_list(text)
+        profile.hard_exclusions = []
+        profile.dietary_restrictions = []
+        profile.sync_aliases()
         session.profile_step = "servings"
         session = _assistant(
             session,

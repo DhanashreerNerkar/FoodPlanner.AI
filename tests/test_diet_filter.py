@@ -70,3 +70,56 @@ def test_vegetarian_requires_explicitly_vegan_kimchi_and_bibimbap():
         RecipeCandidate(title="Vegan Bibimbap", ingredients=["vegan kimchi", "rice"]),
     ]
     assert [c.title for c in filter_recipe_candidates(candidates, profile)] == ["Vegan Bibimbap"]
+
+
+def test_non_veg_hindu_allows_eggs_bans_beef():
+    """Non-veg + Hindu must not treat eggs as a restriction; beef is the cultural ban."""
+    profile = UserProfile(
+        diet_type="non-vegetarian",
+        cultural_rules=["Hindu dietary preference"],
+        allergies=[],
+        # Stale leftovers from a previous "Eggs" allergy answer — must not stick.
+        hard_exclusions=["egg"],
+        dietary_restrictions=["egg"],
+    ).sync_aliases()
+
+    assert "egg" not in {x.lower() for x in profile.hard_exclusions}
+    assert "egg" not in {x.lower() for x in profile.dietary_restrictions}
+    assert "beef" in {x.lower() for x in profile.hard_exclusions}
+
+    banned = banned_ingredients_for_profile(profile)
+    assert "egg" not in banned and "eggs" not in banned
+    assert "beef" in banned
+
+    candidates = [
+        RecipeCandidate(title="Egg Bhurji", ingredients=["eggs", "onion"]),
+        RecipeCandidate(title="Beef Curry", ingredients=["beef", "onion"]),
+        RecipeCandidate(title="Chicken Curry", ingredients=["chicken", "onion"]),
+    ]
+    kept = {c.title for c in filter_recipe_candidates(candidates, profile)}
+    assert kept == {"Egg Bhurji", "Chicken Curry"}
+
+
+def test_clearing_allergies_drops_stale_hard_exclusions():
+    profile = UserProfile(
+        diet_type="non-vegetarian",
+        allergies=["egg"],
+        hard_exclusions=["egg"],
+        dietary_restrictions=["egg"],
+    ).sync_aliases()
+    assert "egg" in {x.lower() for x in profile.dietary_restrictions}
+
+    profile.allergies = []
+    profile.sync_aliases()
+    assert profile.hard_exclusions == []
+    assert profile.dietary_restrictions == []
+    assert "egg" not in banned_ingredients_for_profile(profile)
+
+
+def test_egg_does_not_match_eggetarian_label():
+    from src.diet_filter import ingredient_violates
+
+    assert ingredient_violates("egg", {"eggetarian"}) is False
+    assert ingredient_violates("eggs", {"eggetarian"}) is False
+    assert ingredient_violates("egg", {"egg", "eggs"}) is True
+    assert ingredient_violates("chicken egg scramble", {"egg"}) is True
